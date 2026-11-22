@@ -24,6 +24,8 @@ void showMessage(BuildContext context, String text, {bool error = false, SnackBa
       backgroundColor: error ? Colors.red.shade700 : null,
       behavior: SnackBarBehavior.floating,
       action: action,
+      // Messages with an action (e.g. "View cart") still close on their own.
+      persist: false,
     ));
 }
 

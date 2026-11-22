@@ -6,7 +6,7 @@ E-commerce platform for natural honey and bee products in Egypt. Arabic (RTL) an
 |---|---|---|
 | Backend API | ASP.NET Core Web API (.NET 10), EF Core 10, SQL Server, Clean Architecture, JWT | ✅ Phase 2 complete |
 | Admin dashboard | ASP.NET Core MVC (reuses Application + Infrastructure), cookie auth, Bootstrap 5 RTL | ✅ Phase 3 complete |
-| Mobile app | Flutter (Android / iOS) | Phase 4 |
+| Mobile app | Flutter 3.50 (Android / iOS / web), Riverpod, go_router, Dio | ✅ Phase 4 complete |
 
 Docs: [Architecture](docs/ARCHITECTURE.md) · [Development progress](DEVELOPMENT_PROGRESS.md)
 
@@ -34,7 +34,28 @@ src/HoneyHouse.Admin           MVC admin dashboard (Arabic RTL / English), calls
 tests/HoneyHouse.UnitTests
 tests/HoneyHouse.IntegrationTests   real API + throw-away SQL Server database (override server with HH_TEST_SQL)
 tests/HoneyHouse.Admin.Tests        real dashboard + throw-away database, posts forms with antiforgery tokens
+mobile/honey_house_app             Flutter customer app (lib/core = API client, theme, l10n; lib/features = screens)
 ```
+
+## Mobile app (`mobile/honey_house_app`)
+
+Customer app in Arabic (RTL, default) and English. Home, categories, featured products, search with filters and sorting,
+product page with weight options and reviews, favorites, cart, saved addresses, checkout with coupon and cash on delivery
+or Paymob (WebView), order tracking and cancellation, profile, password change and reset.
+
+```bash
+cd mobile/honey_house_app
+flutter pub get
+flutter test                                   # unit + widget tests (fake API, no server needed)
+# Android emulator: the default API address is http://10.0.2.2:5080 (the host machine)
+flutter run
+# Real phone or another server: pass the API address
+flutter run --dart-define=API_BASE_URL=http://192.168.1.10:5080
+flutter build apk --release --dart-define=API_BASE_URL=https://api.example.com
+```
+
+Run the API on all interfaces for a phone on the same Wi-Fi: `dotnet run --project src/HoneyHouse.API --urls http://0.0.0.0:5080`.
+Android blocks plain `http://` in release builds, so a release APK needs the API behind HTTPS.
 
 ## Admin dashboard
 

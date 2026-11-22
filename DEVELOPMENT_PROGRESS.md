@@ -196,4 +196,28 @@ Infrastructure layers directly (same services, rules and database as the API; no
 - Small Application additions only (no API behaviour change): product active/inactive filter, `IInventoryService.GetAsync`.
 - Known limits: the admin user list loads users in memory before paging (fine for thousands, revisit for very large customer bases); sales-by-governorate shows the governorate name stored on the order (Arabic); sample products have placeholder image paths until real photos are uploaded.
 
-## Next: Phase 4 — Flutter mobile app
+## Phase 4 — Flutter customer app
+
+| Task | Status |
+|---|---|
+| 4.1 Setup: theme, Arabic/English with RTL, API client, bottom navigation | ✅ |
+| 4.2 Account: sign in, register, forgot/reset password, profile, change password, language | ✅ |
+| 4.3 Store: home, categories, featured, search, filters and sort, product page with weights, reviews | ✅ |
+| 4.4 Cart and favorites | ✅ |
+| 4.5 Addresses and checkout: coupon, cash on delivery, Paymob WebView | ✅ |
+| 4.6 My orders: details, status timeline, cancel, pay again, rate products | ✅ |
+| 4.7 Tests and a full run against the real API | ✅ |
+
+### 2026-11-22 — Phase 4
+- Flutter 3.50 / Dart 3.14. Material widgets come from the new `material_ui` package (and `cupertino_ui`), which replaced `package:flutter/material.dart` in 3.50.
+- State: Riverpod 3. Routing: go_router with a five-tab shell (Home, Shop, Cart, Favorites, Account); protected screens send guests to sign in and back.
+- API client (Dio): sends `Accept-Language`, attaches the access token, refreshes once on 401 (parallel requests share one refresh, refresh tokens rotate) and signs the user out with a message if the refresh is rejected. Errors use the API's translated problem+json messages.
+- Tokens in secure storage (Keychain / Android Keystore); language remembered on the device and saved on the account for emails.
+- Arabic by default with full RTL; 160 translated strings (gen-l10n). Prices and dates use Latin digits; currency shows as "ج.م" in Arabic and "EGP" in English.
+- Checkout totals always come from the server preview (coupon, shipping by governorate). Online payment opens Paymob in a WebView and detects the `success` redirect; the order is refreshed afterwards (the webhook sets the real status). Unpaid online orders show "Pay now" (new payment link).
+- Tests: 16 Flutter tests pass (API client refresh/expiry/errors, models and validators, and widget flows for sign-in, language switch, add to cart, checkout with coupon, order cancel). `flutter analyze`: no issues.
+- End-to-end run: web build of the app against the real API and SQL Server, driven in Chromium at phone size: register, choose weight, add to cart, add first address, apply coupon, place a cash-on-delivery order, track and cancel it, switch to English.
+- Bugs found by the tests and fixed: checkout did not refresh after applying a coupon; after sign-in the app stayed on the sign-in screen; full-width button theme broke buttons placed in a row.
+- Not verified here: an Android/iOS build (the Android SDK cannot be downloaded in this environment) and a real Paymob payment (needs sandbox keys). Run `flutter build apk` locally.
+
+## Next: Phase 5 — Production readiness
