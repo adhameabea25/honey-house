@@ -1,4 +1,225 @@
+@using HoneyHouse.Application.Features.Analytics
+@model DashboardViewModel
 @{
     ViewData["Title"] = T["nav_dashboard"];
+    var s = Model.Summary;
+    int[] quick = [7, 30, 90, 365];
 }
-<h1 class="h3 mb-4">@T["nav_dashboard"]</h1>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <h1 class="h3 m-0">@T["nav_dashboard"]</h1>
+    @if (Model.ShowSales)
+    {
+        <form method="get" class="d-flex flex-wrap align-items-center gap-2" data-testid="range-form">
+            <div class="btn-group btn-group-sm" role="group">
+                @foreach (var d in quick)
+                {
+                    <a class="btn @(Model.Days == d ? "btn-honey" : "btn-outline-secondary")" href="?days=@d">@T["last_days", d]</a>
+                }
+            </div>
+            <input type="date" name="from" value="@Model.From.ToString("yyyy-MM-dd")" class="form-control form-control-sm w-auto" aria-label="@T["from"]" />
+            <input type="date" name="to" value="@Model.To.ToString("yyyy-MM-dd")" class="form-control form-control-sm w-auto" aria-label="@T["to"]" />
+            <button class="btn btn-sm btn-outline-dark" type="submit">@T["apply"]</button>
+        </form>
+    }
+</div>
+
+@if (Model.Error is not null)
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+
+@if (s is not null)
+{
+    <p class="text-muted small">@T["range_label", Model.From.ToString("yyyy-MM-dd"), Model.To.ToString("yyyy-MM-dd")]</p>
+    <div class="row g-3 mb-4">
+        @{
+            (string Key, string Value, string? Note)[] kpis =
+            [
+                ("kpi_revenue", Fmt.Money(s.Revenue, T), T["kpi_paid", Fmt.Money(s.PaidRevenue, T)]),
+                ("kpi_orders", Fmt.Number(s.Orders), T["kpi_cancelled", s.CancelledOrders]),
+                ("kpi_aov", Fmt.Money(s.AverageOrderValue, T), null),
+                ("kpi_items", Fmt.Number(s.ItemsSold), null),
+                ("kpi_new_customers", Fmt.Number(s.NewCustomers), null),
+                ("kpi_discounts", Fmt.Money(s.DiscountsGiven, T), null),
+            ];
+        }
+        @foreach (var k in kpis)
+        {
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card kpi-card h-100 shadow-sm" data-kpi="@k.Key">
+                    <div class="card-body">
+                        <div class="kpi-label">@T[k.Key]</div>
+                        <div class="kpi-value">@k.Value</div>
+                        @if (k.Note is not null) { <div class="small text-muted">@k.Note</div> }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <a class="card shadow-sm text-decoration-none h-100 border-warning" asp-controller="Orders" asp-action="Index" asp-route-status="Pending">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="display-6">🧾</div>
+                <div>
+                    <div class="kpi-label">@T["kpi_pending_orders"]</div>
+                    <div class="kpi-value text-dark" data-testid="pending-count">@Model.PendingOrders</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a class="card shadow-sm text-decoration-none h-100 @(Model.LowStockCount > 0 ? "border-danger" : "")" asp-controller="Inventory" asp-action="Index" asp-route-lowStockOnly="true">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="display-6">📦</div>
+                <div>
+                    <div class="kpi-label">@T["kpi_low_stock"]</div>
+                    <div class="kpi-value text-dark" data-testid="low-stock-count">@Model.LowStockCount</div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    @if (s is not null)
+    {
+        <div class="col-xl-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white fw-semibold">@T[Model.SalesMonthly ? "chart_sales_monthly" : "chart_sales_daily"]</div>
+                <div class="card-body"><canvas id="salesChart" height="120"></canvas></div>
+            </div>
+        </div>
+    }
+    <div class="@(s is null ? "col-md-6" : "col-xl-4")">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">@T["chart_orders_by_status"]</div>
+            <div class="card-body"><canvas id="statusChart" height="220"></canvas></div>
+        </div>
+    </div>
+    @if (s is null)
+    {
+        <div class="col-md-6">@await Html.PartialAsync("_LowStockCard", Model.LowStock)</div>
+    }
+</div>
+
+@if (s is not null)
+{
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white fw-semibold">@T["top_products"]</div>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0" data-testid="top-products">
+                        <thead><tr><th>@T["product"]</th><th class="text-end">@T["qty_sold"]</th><th class="text-end">@T["revenue"]</th></tr></thead>
+                        <tbody>
+                        @foreach (var p in Model.TopProducts)
+                        {
+                            <tr><td>@(T.IsArabic ? p.NameAr : p.NameEn)</td><td class="text-end">@p.QuantitySold</td><td class="text-end">@Fmt.Money(p.Revenue, T)</td></tr>
+                        }
+                        @if (Model.TopProducts.Count == 0) { <tr><td colspan="3" class="text-muted text-center">@T["no_results"]</td></tr> }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white fw-semibold">@T["sales_by_governorate"]</div>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>@T["governorate"]</th><th class="text-end">@T["kpi_orders"]</th><th class="text-end">@T["revenue"]</th></tr></thead>
+                        <tbody>
+                        @foreach (var g in Model.Governorates)
+                        {
+                            <tr><td>@g.Governorate</td><td class="text-end">@g.Orders</td><td class="text-end">@Fmt.Money(g.Revenue, T)</td></tr>
+                        }
+                        @if (Model.Governorates.Count == 0) { <tr><td colspan="3" class="text-muted text-center">@T["no_results"]</td></tr> }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row g-3">
+    <div class="@(s is null ? "col-12" : "col-xl-8")">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between">
+                <span class="fw-semibold">@T["recent_orders"]</span>
+                <a asp-controller="Orders" asp-action="Index" class="small">@T["view_all"]</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0" data-testid="recent-orders">
+                    <thead><tr><th>@T["order_number"]</th><th>@T["customer"]</th><th>@T["status"]</th><th class="text-end">@T["total"]</th><th>@T["date"]</th></tr></thead>
+                    <tbody>
+                    @foreach (var o in Model.RecentOrders)
+                    {
+                        <tr>
+                            <td><a asp-controller="Orders" asp-action="Details" asp-route-id="@o.Id" class="ltr">@o.OrderNumber</a></td>
+                            <td>@o.CustomerName</td>
+                            <td><span class="badge @Fmt.StatusBadge(o.Status)">@T[$"status_{o.Status}"]</span></td>
+                            <td class="text-end">@Fmt.Money(o.Total, T)</td>
+                            <td class="ltr small">@Fmt.DateTime(o.CreatedAt)</td>
+                        </tr>
+                    }
+                    @if (Model.RecentOrders.Count == 0) { <tr><td colspan="5" class="text-muted text-center">@T["no_results"]</td></tr> }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @if (s is not null)
+    {
+        <div class="col-xl-4">@await Html.PartialAsync("_LowStockCard", Model.LowStock)</div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/lib/chartjs/chart.umd.js"></script>
+    <script>
+        (function () {
+            if (typeof Chart === 'undefined') return;
+            Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+            var rtl = document.documentElement.dir === 'rtl';
+            var sales = @Json.Serialize(Model.Sales.Select(p => new { p.Period, p.Orders, p.Revenue }));
+            var statuses = @Json.Serialize(Model.OrdersByStatus.Where(x => x.Count > 0).Select(x => new { label = T[$"status_{x.Status}"], x.Count }));
+            var salesEl = document.getElementById('salesChart');
+            if (salesEl) {
+                new Chart(salesEl, {
+                    data: {
+                        labels: sales.map(function (p) { return p.period; }),
+                        datasets: [
+                            { type: 'bar', label: @Json.Serialize(T["revenue"]), data: sales.map(function (p) { return p.revenue; }), backgroundColor: '#e8a317', yAxisID: 'y' },
+                            { type: 'line', label: @Json.Serialize(T["kpi_orders"]), data: sales.map(function (p) { return p.orders; }), borderColor: '#5b3a06', backgroundColor: '#5b3a06', tension: .3, yAxisID: 'y1' }
+                        ]
+                    },
+                    options: {
+                        responsive: true, interaction: { mode: 'index', intersect: false },
+                        plugins: { legend: { rtl: rtl } , tooltip: { rtl: rtl } },
+                        scales: {
+                            x: { reverse: rtl },
+                            y: { beginAtZero: true, position: rtl ? 'right' : 'left' },
+                            y1: { beginAtZero: true, position: rtl ? 'left' : 'right', grid: { drawOnChartArea: false }, ticks: { precision: 0 } }
+                        }
+                    }
+                });
+            }
+            var statusEl = document.getElementById('statusChart');
+            if (statusEl && statuses.length) {
+                new Chart(statusEl, {
+                    type: 'doughnut',
+                    data: {
+                        labels: statuses.map(function (s) { return s.label; }),
+                        datasets: [{ data: statuses.map(function (s) { return s.count; }),
+                            backgroundColor: ['#ffc107', '#0dcaf0', '#0d6efd', '#6c757d', '#adb5bd', '#198754', '#dc3545', '#842029'] }]
+                    },
+                    options: { plugins: { legend: { position: 'bottom', rtl: rtl } } }
+                });
+            }
+        })();
+    </script>
+}

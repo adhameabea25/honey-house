@@ -125,7 +125,7 @@
 | # | Task | Status |
 |---|------|--------|
 | 3.1 | MVC project, staff sign-in, Arabic/English (RTL/LTR) layout | ✅ Done |
-| 3.2 | Dashboard home: KPIs and charts | ⏳ |
+| 3.2 | Dashboard home: KPIs and charts | ✅ Done |
 | 3.3 | Categories, products, variants, images | ⏳ |
 | 3.4 | Inventory | ⏳ |
 | 3.5 | Orders and status changes | ⏳ |
@@ -144,5 +144,12 @@ Infrastructure layers directly (same services, rules and database as the API; no
 - Layout: top bar (language, user and role, sign out) and a sidebar that collapses on phones; Users menu is Admin-only. Localized 404/error pages.
 - Development settings share the API's uploads folder so product images added in the dashboard are served by the API.
 - Build: 0 errors, 0 warnings. Tests: 16 admin tests passed.
+
+### 2026-11-22 — Task 3.2
+- Dashboard home (`/`): quick ranges (7/30/90/365 days) or custom dates in Cairo local time; KPI cards (revenue and paid revenue, orders and cancellations, average order, items sold, new customers, discounts).
+- Charts with Chart.js 4.4.1 (served locally from `wwwroot/lib/chartjs`, MIT): daily or monthly sales (bars = revenue, line = orders; monthly when the range is over 92 days) and orders by status. Charts mirror correctly in RTL.
+- Tables: top 5 products, sales by governorate, latest orders (linked to order details), low-stock list; cards for orders awaiting review and low-stock count linking to filtered lists.
+- Sales figures are Admin-only (same rule as the API); Managers see the operational cards and lists only.
+- Build: 0 errors, 0 warnings. Tests: 24 admin tests passed.
 
 ## Next: Phase 3 tasks 3.2 – 3.7
