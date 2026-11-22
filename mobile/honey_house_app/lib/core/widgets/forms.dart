@@ -127,3 +127,13 @@ Future<bool> confirmDialog(BuildContext context, String text, {String? confirmLa
   );
   return ok ?? false;
 }
+
+/// After signing in: back to the screen that asked for it, or to [from] / home when opened directly.
+/// Takes the router (read before the async call) because the auth change can rebuild this screen.
+void leaveAuthScreen(GoRouter router, String? from) {
+  if (router.canPop()) {
+    router.pop();
+  } else {
+    router.go(from ?? '/');
+  }
+}

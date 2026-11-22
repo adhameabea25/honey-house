@@ -39,7 +39,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   void _refresh() {
     final a = _address;
-    setState(() => _summary = a == null ? null : ref.read(orderRepositoryProvider).preview(a.id, _coupon));
+    setState(() {
+      _summary = a == null ? null : ref.read(orderRepositoryProvider).preview(a.id, _coupon);
+    });
   }
 
   Future<void> _pickAddress() async {

@@ -29,12 +29,14 @@ final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Screens that need a signed-in customer. Guests are sent to sign in and come back afterwards.
 const _protected = ['/checkout', '/payment', '/order-placed', '/orders', '/addresses', '/profile', '/change-password'];
-const _guestOnly = ['/login', '/register', '/forgot-password'];
 
 final routerProvider = Provider<GoRouter>((ref) {
-  // Re-run redirects whenever the user signs in or out.
+  // Re-run redirects when the user is signed out, so protected screens close.
+  // (Signing in navigates explicitly; a refresh at that moment would race with it.)
   final authChanges = ValueNotifier<int>(0);
-  ref.listen(authProvider, (_, _) => authChanges.value++);
+  ref.listen(authProvider, (prev, next) {
+    if (prev?.value != null && next.hasValue && next.value == null) authChanges.value++;
+  });
   ref.onDispose(authChanges.dispose);
 
   return GoRouter(
@@ -48,9 +50,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       final path = state.matchedLocation;
       if (!signedIn && _protected.any(path.startsWith)) {
         return Uri(path: '/login', queryParameters: {'from': state.uri.toString()}).toString();
-      }
-      if (signedIn && _guestOnly.contains(path)) {
-        return state.uri.queryParameters['from'] ?? '/';
       }
       return null;
     },

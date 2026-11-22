@@ -23,14 +23,14 @@ ThemeData buildTheme() {
       style: FilledButton.styleFrom(
         backgroundColor: HoneyColors.honey,
         foregroundColor: const Color(0xFF2B1B00),
-        minimumSize: const Size.fromHeight(50),
+        minimumSize: const Size(64, 50),
         textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        minimumSize: const Size.fromHeight(48),
+        minimumSize: const Size(64, 48),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),

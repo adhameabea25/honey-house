@@ -31,10 +31,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
+    final router = GoRouter.of(context);
     setState(() => _busy = true);
     try {
-      // On success the router sends the user back to where they came from.
       await ref.read(authProvider.notifier).login(_email.text.trim(), _password.text);
+      leaveAuthScreen(router, widget.from);
     } catch (e) {
       if (mounted) showError(context, e);
     } finally {
@@ -75,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const SizedBox(height: 8),
             BusyButton(label: l.login, busy: _busy, onPressed: _submit),
             const SizedBox(height: 16),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Wrap(alignment: WrapAlignment.center, crossAxisAlignment: WrapCrossAlignment.center, children: [
               Text(l.noAccount),
               TextButton(
                 onPressed: () => context.pushReplacement(

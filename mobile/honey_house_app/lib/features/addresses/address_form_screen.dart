@@ -144,7 +144,7 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
               for (final g in widget.governorates)
                 DropdownMenuItem(
                   value: g.id,
-                  child: Text('${g.name}  (${l.shippingFeeValue(Fmt.money(g.shippingFee, l.currency))})', overflow: TextOverflow.ellipsis),
+                  child: Text('${g.name}  (${l.shippingFeeValue(Fmt.money(g.shippingFee, 'EGP'))})', overflow: TextOverflow.ellipsis),
                 ),
             ],
             onChanged: (x) => setState(() => _governorateId = x),

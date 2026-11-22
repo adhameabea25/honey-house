@@ -89,7 +89,7 @@ class AddressCard extends StatelessWidget {
                 Text(a.line),
                 const SizedBox(height: 2),
                 Text(a.phone, textDirection: TextDirection.ltr, style: TextStyle(color: Colors.grey.shade700)),
-                Text(l.shippingFeeValue(Fmt.money(a.shippingFee, l.currency)), style: TextStyle(color: Colors.grey.shade700, fontSize: 12.5)),
+                Text(l.shippingFeeValue(Fmt.money(a.shippingFee, 'EGP')), style: TextStyle(color: Colors.grey.shade700, fontSize: 12.5)),
               ]),
             ),
             ?trailing,

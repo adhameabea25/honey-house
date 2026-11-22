@@ -34,10 +34,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
+    final router = GoRouter.of(context);
     setState(() => _busy = true);
     try {
       await ref.read(authProvider.notifier).register(
           fullName: _name.text.trim(), email: _email.text.trim(), phone: _phone.text.trim(), password: _password.text);
+      leaveAuthScreen(router, widget.from);
     } catch (e) {
       if (mounted) showError(context, e);
     } finally {
@@ -79,7 +81,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               BusyButton(label: l.register, busy: _busy, onPressed: _submit),
               const SizedBox(height: 16),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Wrap(alignment: WrapAlignment.center, crossAxisAlignment: WrapCrossAlignment.center, children: [
                 Text(l.haveAccount),
                 TextButton(
                   onPressed: () => context.pushReplacement(
