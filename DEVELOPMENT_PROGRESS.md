@@ -13,7 +13,7 @@
 | # | Task | Status | Build | Tests |
 |---|---|---|---|---|
 | 2.1 | Solution, projects, Domain entities | ✅ Done | ✅ | ✅ 17 unit |
-| 2.2 | DbContext, configurations, migration, seed | ⏳ | | |
+| 2.2 | DbContext, configurations, migration, seed | ✅ Done | ✅ | ✅ 2 unit + 7 integration |
 | 2.3 | Error handling, validation, localization, Swagger, logging | ⏳ | | |
 | 2.4 | Authentication (JWT + refresh) and roles | ⏳ | | |
 | 2.5 | Catalog: categories, products, variants, images | ⏳ | | |
@@ -32,3 +32,12 @@
 - Domain rules: `Coupon.CalculateDiscount`, `OrderStateMachine`.
 - `docker-compose.yml` for local SQL Server 2022.
 - Build: 0 errors, 0 warnings. Unit tests: 17/17 passed.
+
+### 2026-11-22 — Task 2.2
+- `AppDbContext` (Identity + 18 domain sets): automatic `CreatedAt`/`UpdatedAt`, soft delete with global query filters, decimal(18,2) for all money columns.
+- Fluent configurations for every entity: unique indexes (SKU, slugs, order number, coupon code), check constraints (stock ≥ 0, price ≥ 0, rating 1–5, cart quantity > 0), `rowversion` concurrency token on `ProductVariants`, enums stored as strings.
+- Repository pattern: `IGenericRepository<T>` + `IUnitOfWork` with `ExecuteInTransactionAsync` (retry-safe execution strategy).
+- Migration `InitialCreate` (26 tables). Applied on startup when `Seed:ApplyMigrations` is true.
+- Seeder: roles (Admin, Manager, Customer), admin user from config, 27 Egyptian governorates with shipping fees, sample honey catalog in Development (9 products, 19 weight variants).
+- Integration test harness: `HoneyHouseApiFactory` boots the real API on a throw-away SQL Server database per run (`HH_TEST_SQL` overrides the server).
+- Build: 0 errors, 0 warnings. Tests: 19 unit + 7 integration passed (incl. negative-stock constraint and concurrent stock update detection).
