@@ -1,5 +1,7 @@
 using FluentValidation;
+using HoneyHouse.Application.Features.Addresses;
 using HoneyHouse.Application.Features.Auth;
+using HoneyHouse.Application.Features.Cart;
 using HoneyHouse.Application.Features.Catalog;
 using HoneyHouse.Application.Interfaces.Services;
 using HoneyHouse.Application.Localization;
@@ -18,6 +20,8 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IProductAdminService, ProductAdminService>();
+        services.AddScoped<IAddressService, AddressService>();
+        services.AddScoped<ICartService, CartService>();
         return services;
     }
 }

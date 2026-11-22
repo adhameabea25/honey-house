@@ -17,7 +17,7 @@
 | 2.3 | Error handling, validation, localization, Swagger, logging | ✅ Done | ✅ | ✅ 12 unit + 7 integration |
 | 2.4 | Authentication (JWT + refresh) and roles | ✅ Done | ✅ | ✅ 3 unit + 13 integration |
 | 2.5 | Catalog: categories, products, variants, images | ✅ Done | ✅ | ✅ 13 unit + 11 integration |
-| 2.6 | Addresses, governorates, cart | ⏳ | | |
+| 2.6 | Addresses, governorates, cart | ✅ Done | ✅ | ✅ 2 unit + 9 integration |
 | 2.7 | Coupons | ⏳ | | |
 | 2.8 | Orders, checkout, inventory | ⏳ | | |
 | 2.9 | Payments: COD + Paymob | ⏳ | | |
@@ -65,3 +65,9 @@
 - Admin (Admin/Manager): category CRUD with two-level rule, slug uniqueness and non-empty delete protection; product CRUD (soft delete) with weight options; add/update/deactivate variants (last active variant protected, stock only via inventory adjustments, initial stock recorded as an inventory transaction); image upload (JPG/PNG/WEBP ≤ 5 MB), set main image, delete image.
 - `IFileStorage` with `LocalFileStorage` served from `/uploads`.
 - Build: 0 errors, 0 warnings. Tests: 47 unit + 38 integration passed.
+
+### 2026-11-22 — Task 2.6
+- `GET /governorates` (public, localized, with shipping fee); `GET|PUT /admin/governorates/{id}` (Admin) to change fees or disable delivery to a governorate.
+- Addresses (`/addresses`): list, get, create, update, delete, set default. Max 10 per user, first address becomes default, deleting the default promotes another, Egyptian phone validation, users are isolated from each other.
+- Cart (`/cart`): get, add item (merges quantities), update quantity, remove item, clear. Enforces stock and max 20 units per item; deactivated/deleted products stay visible but flagged `isAvailable=false` and are excluded from the subtotal.
+- Build: 0 errors, 0 warnings. Tests: 49 unit + 47 integration passed.

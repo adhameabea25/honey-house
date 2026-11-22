@@ -52,6 +52,8 @@ public static class DependencyInjection
 
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IAddressRepository, AddressRepository>();
+        services.AddScoped<ICartRepository, CartRepository>();
 
         services.Configure<FileStorageOptions>(configuration.GetSection(FileStorageOptions.Section));
         services.AddSingleton<IFileStorage, LocalFileStorage>();

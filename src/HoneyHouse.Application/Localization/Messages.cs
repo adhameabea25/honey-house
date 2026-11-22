@@ -42,6 +42,14 @@ public static class Messages
         ["product_needs_variant"] = ("يجب أن يحتوي المنتج على وزن واحد نشط على الأقل", "A product must have at least one active weight option."),
         ["image_not_found"] = ("الصورة غير موجودة", "Image not found."),
         ["image_invalid"] = ("الصورة يجب أن تكون JPG أو PNG أو WEBP وبحجم أقل من 5 ميجابايت", "Image must be JPG, PNG or WEBP and smaller than 5 MB."),
+        // Addresses & cart
+        ["governorate_not_found"] = ("المحافظة غير موجودة أو غير متاحة للتوصيل", "Governorate not found or not available for delivery."),
+        ["address_not_found"] = ("العنوان غير موجود", "Address not found."),
+        ["address_limit"] = ("لا يمكن إضافة أكثر من {0} عناوين", "You cannot save more than {0} addresses."),
+        ["cart_item_not_found"] = ("المنتج غير موجود في السلة", "Item not found in cart."),
+        ["variant_unavailable"] = ("هذا المنتج غير متاح حاليًا", "This product is currently unavailable."),
+        ["insufficient_stock"] = ("الكمية المطلوبة غير متوفرة، المتاح {0} فقط", "Requested quantity is not available. Only {0} left."),
+        ["max_quantity_exceeded"] = ("الحد الأقصى {0} قطعة من كل منتج في الطلب الواحد", "Maximum {0} units of each item per order."),
         ["identity_error"] = ("تعذر تنفيذ العملية: {0}", "The operation failed: {0}"),
     };
 
