@@ -484,3 +484,7 @@ $RECYCLE.BIN/
 # Local uploads
 src/HoneyHouse.API/wwwroot/uploads/
 src/HoneyHouse.Admin/wwwroot/uploads/
+
+# Flutter Android debug/profile manifests (not build output)
+!mobile/honey_house_app/android/app/src/debug/
+!mobile/honey_house_app/android/app/src/profile/
