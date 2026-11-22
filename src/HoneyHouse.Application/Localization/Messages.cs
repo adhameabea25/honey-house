@@ -31,6 +31,17 @@ public static class Messages
         ["invalid_reset_token"] = ("رابط إعادة تعيين كلمة المرور غير صالح أو منتهي", "The password reset link is invalid or has expired."),
         ["password_incorrect"] = ("كلمة المرور الحالية غير صحيحة", "The current password is incorrect."),
         ["user_not_found"] = ("المستخدم غير موجود", "User not found."),
+        // Catalog
+        ["category_not_found"] = ("التصنيف غير موجود", "Category not found."),
+        ["parent_category_invalid"] = ("التصنيف الأب غير صالح (يُسمح بمستويين فقط)", "Invalid parent category (only two levels are allowed)."),
+        ["category_not_empty"] = ("لا يمكن حذف تصنيف يحتوي على منتجات أو تصنيفات فرعية", "A category with products or sub-categories cannot be deleted."),
+        ["slug_taken"] = ("الرابط المختصر (Slug) مستخدم بالفعل", "This slug is already in use."),
+        ["product_not_found"] = ("المنتج غير موجود", "Product not found."),
+        ["variant_not_found"] = ("الوزن المطلوب غير موجود", "Product option not found."),
+        ["sku_taken"] = ("رمز المنتج (SKU) مستخدم بالفعل: {0}", "SKU already in use: {0}"),
+        ["product_needs_variant"] = ("يجب أن يحتوي المنتج على وزن واحد نشط على الأقل", "A product must have at least one active weight option."),
+        ["image_not_found"] = ("الصورة غير موجودة", "Image not found."),
+        ["image_invalid"] = ("الصورة يجب أن تكون JPG أو PNG أو WEBP وبحجم أقل من 5 ميجابايت", "Image must be JPG, PNG or WEBP and smaller than 5 MB."),
         ["identity_error"] = ("تعذر تنفيذ العملية: {0}", "The operation failed: {0}"),
     };
 

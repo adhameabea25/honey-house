@@ -2,6 +2,7 @@ using HoneyHouse.Application.Interfaces.Repositories;
 using HoneyHouse.Application.Interfaces.Services;
 using HoneyHouse.Infrastructure.Email;
 using HoneyHouse.Infrastructure.Identity;
+using HoneyHouse.Infrastructure.Storage;
 using HoneyHouse.Domain.Entities;
 using HoneyHouse.Infrastructure.Persistence;
 using HoneyHouse.Infrastructure.Persistence.Repositories;
@@ -48,6 +49,12 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+
+        services.Configure<FileStorageOptions>(configuration.GetSection(FileStorageOptions.Section));
+        services.AddSingleton<IFileStorage, LocalFileStorage>();
 
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Section));
         services.AddSingleton<ITokenService, JwtTokenService>();

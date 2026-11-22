@@ -16,7 +16,7 @@
 | 2.2 | DbContext, configurations, migration, seed | ✅ Done | ✅ | ✅ 2 unit + 7 integration |
 | 2.3 | Error handling, validation, localization, Swagger, logging | ✅ Done | ✅ | ✅ 12 unit + 7 integration |
 | 2.4 | Authentication (JWT + refresh) and roles | ✅ Done | ✅ | ✅ 3 unit + 13 integration |
-| 2.5 | Catalog: categories, products, variants, images | ⏳ | | |
+| 2.5 | Catalog: categories, products, variants, images | ✅ Done | ✅ | ✅ 13 unit + 11 integration |
 | 2.6 | Addresses, governorates, cart | ⏳ | | |
 | 2.7 | Coupons | ⏳ | | |
 | 2.8 | Orders, checkout, inventory | ⏳ | | |
@@ -58,3 +58,10 @@
 - Rate limiting on auth endpoints (10/min per IP, configurable). Localized 401/403 problem responses.
 - `IEmailSender` abstraction (development implementation logs emails).
 - Build: 0 errors, 0 warnings. Tests: 34 unit + 27 integration passed.
+
+### 2026-11-22 — Task 2.5
+- Repositories: `ICategoryRepository`, `IProductRepository` (search with projection, details with includes, slug/SKU uniqueness incl. soft-deleted rows).
+- Public: `GET /categories` (2-level tree), `GET /categories/{id}`, `GET /products` (search in Arabic/English names, descriptions and SKU; filters: category incl. sub-categories, min/max price, in stock, featured; sort: newest, price_asc, price_desc, rating, bestselling, name; paging), `GET /products/featured`, `GET /products/{id}`, `GET /products/slug/{slug}`. Responses are localized and priced in EGP; exact stock is hidden (capped at 20).
+- Admin (Admin/Manager): category CRUD with two-level rule, slug uniqueness and non-empty delete protection; product CRUD (soft delete) with weight options; add/update/deactivate variants (last active variant protected, stock only via inventory adjustments, initial stock recorded as an inventory transaction); image upload (JPG/PNG/WEBP ≤ 5 MB), set main image, delete image.
+- `IFileStorage` with `LocalFileStorage` served from `/uploads`.
+- Build: 0 errors, 0 warnings. Tests: 47 unit + 38 integration passed.

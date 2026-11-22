@@ -35,6 +35,15 @@ if (!app.Environment.IsProduction())
     app.UseSwaggerUI(o => o.DocumentTitle = "Honey House API");
 }
 
+var storage = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<HoneyHouse.Infrastructure.Storage.FileStorageOptions>>().Value;
+var uploadsRoot = Path.GetFullPath(storage.RootPath);
+Directory.CreateDirectory(uploadsRoot);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsRoot),
+    RequestPath = storage.RequestPath
+});
+
 app.UseCors();
 app.UseRateLimiter();
 app.UseAuthentication();

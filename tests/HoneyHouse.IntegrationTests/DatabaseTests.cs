@@ -49,12 +49,19 @@ public class DatabaseTests(HoneyHouseApiFactory factory)
     [Fact]
     public async Task Seeding_twice_is_idempotent()
     {
+        int categoriesBefore = 0, productsBefore = 0;
+        await factory.WithDbAsync(async db =>
+        {
+            categoriesBefore = await db.Categories.IgnoreQueryFilters().CountAsync();
+            productsBefore = await db.Products.IgnoreQueryFilters().CountAsync();
+        });
         using var scope = factory.Services.CreateScope();
         await scope.ServiceProvider.GetRequiredService<DatabaseSeeder>().SeedAsync();
         await factory.WithDbAsync(async db =>
         {
             (await db.Governorates.CountAsync()).ShouldBe(27);
-            (await db.Categories.CountAsync()).ShouldBe(3);
+            (await db.Categories.IgnoreQueryFilters().CountAsync()).ShouldBe(categoriesBefore);
+            (await db.Products.IgnoreQueryFilters().CountAsync()).ShouldBe(productsBefore);
         });
     }
 

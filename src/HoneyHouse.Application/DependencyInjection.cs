@@ -1,5 +1,6 @@
 using FluentValidation;
 using HoneyHouse.Application.Features.Auth;
+using HoneyHouse.Application.Features.Catalog;
 using HoneyHouse.Application.Interfaces.Services;
 using HoneyHouse.Application.Localization;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,9 @@ public static class DependencyInjection
         services.AddSingleton<ILanguageContext, CultureLanguageContext>();
         services.AddSingleton<ILocalizer, Localizer>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IProductAdminService, ProductAdminService>();
         return services;
     }
 }

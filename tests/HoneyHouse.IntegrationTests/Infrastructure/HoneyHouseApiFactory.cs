@@ -19,6 +19,7 @@ public class HoneyHouseApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
     public const string AdminPassword = "Admin12345";
 
     public CapturingEmailSender Emails { get; } = new();
+    public string UploadsPath { get; } = Path.Combine(Path.GetTempPath(), $"hh-uploads-{Guid.NewGuid():N}");
 
     private readonly string _databaseName = $"HoneyHouse_Test_{Guid.NewGuid():N}";
 
@@ -45,7 +46,8 @@ public class HoneyHouseApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
                 ["Seed:AdminEmail"] = AdminEmail,
                 ["Seed:AdminPassword"] = AdminPassword,
                 ["Jwt:SigningKey"] = "integration-tests-signing-key-0123456789abcdef",
-                ["RateLimiting:AuthPermitPerMinute"] = "10000"
+                ["RateLimiting:AuthPermitPerMinute"] = "10000",
+                ["FileStorage:RootPath"] = UploadsPath
             });
         });
         builder.ConfigureServices(services =>
@@ -71,6 +73,7 @@ public class HoneyHouseApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
     async Task IAsyncLifetime.DisposeAsync()
     {
         await WithDbAsync(db => db.Database.EnsureDeletedAsync());
+        if (Directory.Exists(UploadsPath)) Directory.Delete(UploadsPath, recursive: true);
         await base.DisposeAsync();
     }
 }
