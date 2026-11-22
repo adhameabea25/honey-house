@@ -14,7 +14,7 @@
 |---|---|---|---|---|
 | 2.1 | Solution, projects, Domain entities | ✅ Done | ✅ | ✅ 17 unit |
 | 2.2 | DbContext, configurations, migration, seed | ✅ Done | ✅ | ✅ 2 unit + 7 integration |
-| 2.3 | Error handling, validation, localization, Swagger, logging | ⏳ | | |
+| 2.3 | Error handling, validation, localization, Swagger, logging | ✅ Done | ✅ | ✅ 12 unit + 7 integration |
 | 2.4 | Authentication (JWT + refresh) and roles | ⏳ | | |
 | 2.5 | Catalog: categories, products, variants, images | ⏳ | | |
 | 2.6 | Addresses, governorates, cart | ⏳ | | |
@@ -41,3 +41,12 @@
 - Seeder: roles (Admin, Manager, Customer), admin user from config, 27 Egyptian governorates with shipping fees, sample honey catalog in Development (9 products, 19 weight variants).
 - Integration test harness: `HoneyHouseApiFactory` boots the real API on a throw-away SQL Server database per run (`HH_TEST_SQL` overrides the server).
 - Build: 0 errors, 0 warnings. Tests: 19 unit + 7 integration passed (incl. negative-stock constraint and concurrent stock update detection).
+
+### 2026-11-22 — Task 2.3
+- Localization: request culture from `?lang=` or `Accept-Language` (`ar` default, `en`). Bilingual message catalogue in `Application/Localization/Messages.cs`; FluentValidation built-in messages follow the request culture (Arabic included).
+- `Result` / `Result<T>` / `Error` pattern and `ApiControllerBase` mapping errors to localized `ProblemDetails` (400/401/403/404/409/422) with a stable `code` field.
+- `ValidationFilter` runs FluentValidation for every action argument; `GlobalExceptionHandler` returns localized 500/409 responses; `UseStatusCodePages` gives problem+json for 404/401/405.
+- Swagger (with JWT bearer scheme and XML docs), Serilog request logging, CORS (configurable origins), rate limiter policy `auth`, `/health` with a database check.
+- `GET /api/v1/meta`: store name in the requested language, currency EGP, supported languages.
+- Shared validation rules: Egyptian mobile numbers, password strength, supported language.
+- Build: 0 errors, 0 warnings. Tests: 31 unit + 14 integration passed.
