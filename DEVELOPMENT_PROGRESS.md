@@ -121,4 +121,28 @@
 - Replace `LoggingEmailSender` with a real email provider and `LocalFileStorage` with blob storage if running more than one server.
 - Run migrations as a deployment step (`Seed:ApplyMigrations=false` on the web servers).
 
-## Next: Phase 3 — Admin Dashboard (ASP.NET Core MVC)
+## Phase 3 — Admin dashboard tasks
+| # | Task | Status |
+|---|------|--------|
+| 3.1 | MVC project, staff sign-in, Arabic/English (RTL/LTR) layout | ✅ Done |
+| 3.2 | Dashboard home: KPIs and charts | ⏳ |
+| 3.3 | Categories, products, variants, images | ⏳ |
+| 3.4 | Inventory | ⏳ |
+| 3.5 | Orders and status changes | ⏳ |
+| 3.6 | Coupons, reviews, shipping fees | ⏳ |
+| 3.7 | Users and staff | ⏳ |
+
+The dashboard (`src/HoneyHouse.Admin`) is a separate ASP.NET Core MVC app that reuses the Application and
+Infrastructure layers directly (same services, rules and database as the API; no HTTP calls to the API).
+
+### 2026-11-22 — Task 3.1
+- `HoneyHouse.Admin` MVC project + `HoneyHouse.Admin.Tests` (WebApplicationFactory against a throw-away SQL Server database, form posts with real antiforgery tokens).
+- Cookie authentication (`hh_admin`, HttpOnly, SameSite=Strict, 8 h sliding). Only Admin and Manager can sign in; disabled/locked accounts are refused and failed passwords count toward the same lockout as the API.
+- The account is re-checked on every request: disabling a user, removing their staff role or changing their password ends the dashboard session immediately; role changes refresh the cookie.
+- Antiforgery validation on every POST; local-only return URLs.
+- Arabic by default (RTL, `bootstrap.rtl`), English via the language button (culture cookie, LTR). UI text lives in `Localization/AdminText*.cs` and falls back to the shared API messages for error codes. Validation and model-binding messages are localized too.
+- Layout: top bar (language, user and role, sign out) and a sidebar that collapses on phones; Users menu is Admin-only. Localized 404/error pages.
+- Development settings share the API's uploads folder so product images added in the dashboard are served by the API.
+- Build: 0 errors, 0 warnings. Tests: 16 admin tests passed.
+
+## Next: Phase 3 tasks 3.2 – 3.7

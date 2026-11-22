@@ -1,0 +1,89 @@
+@{
+    var isAr = T.IsArabic;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    string Active(string name) => string.Equals(controller, name, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    var isAdmin = User.IsInRole(Roles.Admin);
+}
+<!DOCTYPE html>
+<html lang="@T.Language" dir="@(isAr ? "rtl" : "ltr")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @T["app_title"]</title>
+    @if (isAr)
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    }
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="admin">
+<nav class="navbar navbar-dark bg-honey-dark sticky-top px-3">
+    <button class="btn btn-outline-light d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="@T["toggle_menu"]">☰</button>
+    <a class="navbar-brand fw-bold" asp-controller="Dashboard" asp-action="Index">🍯 @T["brand"]</a>
+    <div class="d-flex align-items-center gap-2 ms-auto">
+        <form method="post" asp-controller="Language" asp-action="Set" class="m-0">
+            <input type="hidden" name="culture" value="@(isAr ? "en" : "ar")" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            <button type="submit" class="btn btn-sm btn-outline-light" data-testid="lang-switch">@T["language_switch"]</button>
+        </form>
+        <span class="text-light small d-none d-md-inline">
+            @User.DisplayName()
+            <span class="badge bg-warning text-dark">@T[isAdmin ? "role_Admin" : "role_Manager"]</span>
+        </span>
+        <form method="post" asp-controller="Account" asp-action="Logout" class="m-0">
+            <button type="submit" class="btn btn-sm btn-light">@T["logout"]</button>
+        </form>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <aside class="col-lg-2 p-0">
+            <div class="offcanvas-lg offcanvas-start sidebar" tabindex="-1" id="sidebar">
+                <div class="offcanvas-header d-lg-none">
+                    <h5 class="offcanvas-title">@T["brand"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebar"></button>
+                </div>
+                <div class="offcanvas-body p-0">
+                    <nav class="nav flex-column w-100 py-2">
+                        <a class="nav-link @Active("Dashboard")" asp-controller="Dashboard" asp-action="Index">📊 @T["nav_dashboard"]</a>
+                        <div class="nav-section">@T["nav_catalog"]</div>
+                        <a class="nav-link @Active("Categories")" asp-controller="Categories" asp-action="Index">🗂️ @T["nav_categories"]</a>
+                        <a class="nav-link @Active("Products")" asp-controller="Products" asp-action="Index">🍯 @T["nav_products"]</a>
+                        <a class="nav-link @Active("Inventory")" asp-controller="Inventory" asp-action="Index">📦 @T["nav_inventory"]</a>
+                        <div class="nav-section">@T["nav_sales"]</div>
+                        <a class="nav-link @Active("Orders")" asp-controller="Orders" asp-action="Index">🧾 @T["nav_orders"]</a>
+                        <a class="nav-link @Active("Coupons")" asp-controller="Coupons" asp-action="Index">🏷️ @T["nav_coupons"]</a>
+                        <a class="nav-link @Active("Reviews")" asp-controller="Reviews" asp-action="Index">⭐ @T["nav_reviews"]</a>
+                        <div class="nav-section">@T["nav_settings"]</div>
+                        <a class="nav-link @Active("Governorates")" asp-controller="Governorates" asp-action="Index">🚚 @T["nav_shipping"]</a>
+                        @if (isAdmin)
+                        {
+                            <a class="nav-link @Active("Users")" asp-controller="Users" asp-action="Index">👥 @T["nav_users"]</a>
+                        }
+                    </nav>
+                </div>
+            </div>
+        </aside>
+        <main class="col-lg-10 py-4 px-md-4">
+            @if (TempData[AdminControllerBase.FlashSuccess] is string ok)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">@ok<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+            }
+            @if (TempData[AdminControllerBase.FlashError] is string err)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">@err<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+            }
+            @RenderBody()
+        </main>
+    </div>
+</div>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

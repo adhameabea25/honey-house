@@ -483,3 +483,4 @@ $RECYCLE.BIN/
 
 # Local uploads
 src/HoneyHouse.API/wwwroot/uploads/
+src/HoneyHouse.Admin/wwwroot/uploads/

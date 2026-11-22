@@ -1,0 +1,37 @@
+@model LoginViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = T["login_title"];
+}
+<div class="row justify-content-center mt-5">
+    <div class="col-sm-9 col-md-6 col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="display-5">🍯</div>
+                    <h1 class="h4 mb-1">@T["login_title"]</h1>
+                    <p class="text-muted small mb-0">@T["login_subtitle"]</p>
+                </div>
+                <form method="post" asp-action="Login" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">@T["email"]</label>
+                        <input asp-for="Email" type="email" class="form-control" dir="ltr" autocomplete="username" autofocus />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">@T["password"]</label>
+                        <input asp-for="Password" type="password" class="form-control" dir="ltr" autocomplete="current-password" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label">@T["remember_me"]</label>
+                    </div>
+                    <button type="submit" class="btn btn-honey w-100">@T["login_button"]</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
