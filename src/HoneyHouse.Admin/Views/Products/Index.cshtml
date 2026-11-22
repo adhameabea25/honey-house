@@ -1,0 +1,65 @@
+@model ProductListViewModel
+@{ ViewData["Title"] = T["nav_products"]; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 m-0">@T["nav_products"]</h1>
+    <a asp-action="Create" class="btn btn-honey">+ @T["product_add"]</a>
+</div>
+<form method="get" class="card card-body shadow-sm mb-3">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small" for="search">@T["search"]</label>
+            <input id="search" name="search" value="@Model.Search" class="form-control" placeholder="@T["product_search_hint"]" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small" for="categoryId">@T["category"]</label>
+            <select id="categoryId" name="categoryId" class="form-select">
+                <option value="">@T["all"]</option>
+                @foreach (var c in Model.Categories)
+                {
+                    <option value="@c.Value" selected="@(c.Value == Model.CategoryId?.ToString())">@c.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small" for="status">@T["status"]</label>
+            <select id="status" name="status" class="form-select">
+                <option value="">@T["all"]</option>
+                <option value="active" selected="@(Model.Status == "active")">@T["active"]</option>
+                <option value="inactive" selected="@(Model.Status == "inactive")">@T["inactive"]</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button class="btn btn-dark" type="submit">@T["filter"]</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">@T["reset"]</a>
+        </div>
+    </div>
+</form>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" data-testid="products">
+            <thead><tr><th></th><th>@T["product"]</th><th>@T["category"]</th><th>@T["price"]</th><th>@T["stock"]</th><th>@T["status"]</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var p in Model.Result.Items)
+            {
+                <tr>
+                    <td>@if (p.MainImageUrl is not null) { <img src="@p.MainImageUrl" class="thumb" alt="" /> } else { <div class="thumb d-flex align-items-center justify-content-center">🍯</div> }</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@p.Id" class="fw-semibold text-decoration-none">@(T.IsArabic ? p.NameAr : p.NameEn)</a>
+                        <div class="small text-muted">@(T.IsArabic ? p.NameEn : p.NameAr)</div>
+                    </td>
+                    <td>@(T.IsArabic ? p.CategoryNameAr : p.CategoryNameEn)</td>
+                    <td class="text-nowrap">@(p.MinPrice == p.MaxPrice ? Fmt.Money(p.MinPrice, T) : $"{Fmt.Number(p.MinPrice)} – {Fmt.Money(p.MaxPrice, T)}")</td>
+                    <td><span class="badge @(p.TotalStock == 0 ? "bg-danger" : "bg-light text-dark")">@p.TotalStock</span></td>
+                    <td>
+                        <span class="badge @(p.IsActive ? "bg-success" : "bg-secondary")">@T[p.IsActive ? "active" : "inactive"]</span>
+                        @if (p.IsFeatured) { <span class="badge bg-warning text-dark">@T["featured"]</span> }
+                    </td>
+                    <td class="text-end"><a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary">@T["edit"]</a></td>
+                </tr>
+            }
+            @if (Model.Result.Items.Count == 0) { <tr><td colspan="7" class="text-center text-muted">@T["no_results"]</td></tr> }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" model="Pager.From(Model.Result)" />
+</div>

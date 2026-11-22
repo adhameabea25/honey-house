@@ -66,8 +66,8 @@ public static class AdminServiceExtensions
 
         services.Configure<RequestLocalizationOptions>(o =>
         {
-            var cultures = SupportedCultures.Select(c => new CultureInfo(c)).ToList();
-            o.DefaultRequestCulture = new RequestCulture("ar");
+            var cultures = SupportedCultures.Select(CreateCulture).ToList();
+            o.DefaultRequestCulture = new RequestCulture(cultures[0]);
             o.SupportedCultures = cultures;
             o.SupportedUICultures = cultures;
             o.RequestCultureProviders =
@@ -78,6 +78,18 @@ public static class AdminServiceExtensions
         });
 
         return services;
+    }
+
+    /// <summary>
+    /// UI language only: numbers keep Latin digits and "." decimals and dates stay Gregorian in both languages,
+    /// so prices typed in forms and shown in tables read the same for every user.
+    /// </summary>
+    private static CultureInfo CreateCulture(string name)
+    {
+        var culture = (CultureInfo)CultureInfo.GetCultureInfo(name).Clone();
+        culture.NumberFormat = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+        culture.DateTimeFormat.Calendar = new GregorianCalendar();
+        return culture;
     }
 
     /// <summary>Serves product images saved by the dashboard so staff can preview them (same folder the API serves).</summary>

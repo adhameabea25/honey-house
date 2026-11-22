@@ -126,7 +126,7 @@
 |---|------|--------|
 | 3.1 | MVC project, staff sign-in, Arabic/English (RTL/LTR) layout | ✅ Done |
 | 3.2 | Dashboard home: KPIs and charts | ✅ Done |
-| 3.3 | Categories, products, variants, images | ⏳ |
+| 3.3 | Categories, products, variants, images | ✅ Done |
 | 3.4 | Inventory | ⏳ |
 | 3.5 | Orders and status changes | ⏳ |
 | 3.6 | Coupons, reviews, shipping fees | ⏳ |
@@ -151,5 +151,15 @@ Infrastructure layers directly (same services, rules and database as the API; no
 - Tables: top 5 products, sales by governorate, latest orders (linked to order details), low-stock list; cards for orders awaiting review and low-stock count linking to filtered lists.
 - Sales figures are Admin-only (same rule as the API); Managers see the operational cards and lists only.
 - Build: 0 errors, 0 warnings. Tests: 24 admin tests passed.
+
+### 2026-11-22 — Task 3.3
+- Categories: two-level tree list, add/edit (Arabic and English names and descriptions, parent, slug, order, active, image upload with replace/remove), delete (refused with a clear message while it has products or sub-categories). Uploaded files are cleaned up when a save fails or an image is replaced.
+- Products: list with search (Arabic or English), category and active/inactive filters, paging; create with the first weight option and opening stock (recorded as an inventory transaction); edit details, featured and visibility; soft delete.
+- Weight options: add and edit SKU, weight, Arabic/English label, price, compare-at price, low-stock threshold, active. Stock is read-only here and changes only through Inventory, so every change is audited.
+- Images: multi-file upload (JPG/PNG/WEBP up to 5 MB), set main image, delete (the next image becomes main).
+- Forms reuse the API's FluentValidation validators; errors are shown next to each field in the current language. Numbers keep Latin digits and "." decimals in the Arabic UI so prices bind the same way in both languages.
+- Small Application change: `ProductSearchCriteria.IsActive` filter so the dashboard can list hidden products only.
+- Note: the sample catalogue seeds placeholder image paths (`/images/products/...`) that have no files yet; real photos can now be uploaded from the dashboard.
+- Build: 0 errors, 0 warnings. Tests: 33 admin tests passed; API catalog tests still pass.
 
 ## Next: Phase 3 tasks 3.2 – 3.7

@@ -8,7 +8,7 @@ namespace HoneyHouse.Application.Features.Catalog;
 
 public interface IProductAdminService
 {
-    Task<PagedResult<AdminProductListItemDto>> SearchAsync(ProductQuery query, bool includeInactive, CancellationToken ct = default);
+    Task<PagedResult<AdminProductListItemDto>> SearchAsync(ProductQuery query, bool includeInactive, CancellationToken ct = default, bool? isActive = null);
     Task<Result<AdminProductDto>> GetAsync(int id, CancellationToken ct = default);
     Task<Result<AdminProductDto>> CreateAsync(CreateProductRequest request, CancellationToken ct = default);
     Task<Result<AdminProductDto>> UpdateAsync(int id, UpdateProductRequest request, CancellationToken ct = default);
@@ -31,13 +31,13 @@ public sealed class ProductAdminService(
     public const long MaxImageBytes = 5 * 1024 * 1024;
     private static readonly HashSet<string> AllowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
 
-    public async Task<PagedResult<AdminProductListItemDto>> SearchAsync(ProductQuery query, bool includeInactive, CancellationToken ct = default)
+    public async Task<PagedResult<AdminProductListItemDto>> SearchAsync(ProductQuery query, bool includeInactive, CancellationToken ct = default, bool? isActive = null)
     {
         var paging = new PagedRequest { Page = query.Page, PageSize = query.PageSize };
         IReadOnlyList<int>? categoryIds = query.CategoryId is { } cid ? await categories.GetSelfAndChildIdsAsync(cid, ct) : null;
         var (items, total) = await products.SearchAsync(new ProductSearchCriteria(
             query.Search?.Trim(), categoryIds, query.MinPrice, query.MaxPrice, query.InStock, query.Featured,
-            ProductService.ParseSort(query.Sort), ActiveOnly: !includeInactive, paging.Skip, paging.PageSize), ct);
+            ProductService.ParseSort(query.Sort), ActiveOnly: !includeInactive, paging.Skip, paging.PageSize, IsActive: isActive), ct);
 
         return new PagedResult<AdminProductListItemDto>(items.Select(p => new AdminProductListItemDto(
             p.Id, p.NameAr, p.NameEn, p.Slug, p.CategoryId, p.CategoryNameAr, p.CategoryNameEn, p.MainImageUrl,

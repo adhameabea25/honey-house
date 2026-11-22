@@ -1,0 +1,34 @@
+@model IReadOnlyList<CategoryRow>
+@{ ViewData["Title"] = T["nav_categories"]; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 m-0">@T["nav_categories"]</h1>
+    <a asp-action="Create" class="btn btn-honey">+ @T["category_add"]</a>
+</div>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" data-testid="categories">
+            <thead><tr><th></th><th>@T["name_ar"]</th><th>@T["name_en"]</th><th>@T["slug"]</th><th>@T["sort_order"]</th><th>@T["status"]</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var row in Model)
+            {
+                var c = row.Category;
+                <tr class="@(row.Depth > 0 ? "table-light" : "")">
+                    <td>@if (c.ImageUrl is not null) { <img src="@c.ImageUrl" class="thumb" alt="" /> }</td>
+                    <td>@(row.Depth > 0 ? "↳ " : "")@c.NameAr</td>
+                    <td>@c.NameEn</td>
+                    <td class="ltr small text-muted">@c.Slug</td>
+                    <td>@c.SortOrder</td>
+                    <td><span class="badge @(c.IsActive ? "bg-success" : "bg-secondary")">@T[c.IsActive ? "active" : "inactive"]</span></td>
+                    <td class="text-nowrap text-end">
+                        <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary">@T["edit"]</a>
+                        <form method="post" asp-action="Delete" asp-route-id="@c.Id" class="d-inline" data-confirm="@T["confirm_delete"]">
+                            <button class="btn btn-sm btn-outline-danger">@T["delete"]</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (Model.Count == 0) { <tr><td colspan="7" class="text-center text-muted">@T["no_results"]</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

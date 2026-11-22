@@ -20,14 +20,15 @@ public abstract class AdminControllerBase : Controller
     protected void AddError(Error error, string field = "") => ModelState.AddModelError(field, Describe(error));
 
     /// <summary>Runs FluentValidation on a request and copies failures into ModelState (messages are error codes).</summary>
-    protected async Task<bool> ValidateAsync<TRequest>(TRequest request, string prefix = "")
+    protected async Task<bool> ValidateAsync<TRequest>(TRequest request, string prefix = "", Func<string, string>? mapKey = null)
     {
         var validator = HttpContext.RequestServices.GetService<FluentValidation.IValidator<TRequest>>();
         if (validator is null) return ModelState.IsValid;
         var result = await validator.ValidateAsync(request);
         foreach (var failure in result.Errors)
         {
-            var key = string.IsNullOrEmpty(prefix) ? failure.PropertyName : $"{prefix}.{failure.PropertyName}";
+            var name = mapKey?.Invoke(failure.PropertyName) ?? failure.PropertyName;
+            var key = string.IsNullOrEmpty(prefix) ? name : $"{prefix}.{name}";
             ModelState.AddModelError(key, ValidationText.Describe(T, failure));
         }
         return ModelState.IsValid;

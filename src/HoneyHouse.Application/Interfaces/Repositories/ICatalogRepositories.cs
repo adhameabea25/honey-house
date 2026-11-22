@@ -24,7 +24,9 @@ public sealed record ProductSearchCriteria(
     bool ActiveOnly,
     int Skip,
     int Take,
-    IReadOnlyList<int>? ProductIds = null);
+    IReadOnlyList<int>? ProductIds = null,
+    /// <summary>Admin filter on the product's own IsActive flag (null = both).</summary>
+    bool? IsActive = null);
 
 /// <summary>Flat bilingual projection used for product listings.</summary>
 public sealed record ProductSummary(
