@@ -1,0 +1,17 @@
+@model IReadOnlyList<HoneyHouse.Application.Features.Inventory.InventoryItemDto>
+<div class="card shadow-sm h-100">
+    <div class="card-header bg-white d-flex justify-content-between">
+        <span class="fw-semibold">@T["low_stock_items"]</span>
+        <a asp-controller="Inventory" asp-action="Index" asp-route-lowStockOnly="true" class="small">@T["view_all"]</a>
+    </div>
+    <ul class="list-group list-group-flush" data-testid="low-stock">
+        @foreach (var i in Model)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>@(T.IsArabic ? i.ProductNameAr : i.ProductNameEn) <small class="text-muted">(@(T.IsArabic ? i.LabelAr : i.LabelEn))</small></span>
+                <span class="badge @(i.StockQuantity == 0 ? "bg-danger" : "bg-warning text-dark")">@i.StockQuantity</span>
+            </li>
+        }
+        @if (Model.Count == 0) { <li class="list-group-item text-muted text-center">@T["no_low_stock"]</li> }
+    </ul>
+</div>

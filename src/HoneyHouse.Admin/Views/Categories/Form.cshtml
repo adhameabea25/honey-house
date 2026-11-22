@@ -1,0 +1,77 @@
+@model CategoryForm
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = T[isNew ? "category_add" : "category_edit"];
+}
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+<form method="post" enctype="multipart/form-data" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)" class="card shadow-sm" novalidate>
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="NameAr" class="form-label">@T["name_ar"] *</label>
+                <input asp-for="NameAr" class="form-control" dir="rtl" />
+                <span asp-validation-for="NameAr" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="NameEn" class="form-label">@T["name_en"] *</label>
+                <input asp-for="NameEn" class="form-control" dir="ltr" />
+                <span asp-validation-for="NameEn" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="DescriptionAr" class="form-label">@T["description_ar"]</label>
+                <textarea asp-for="DescriptionAr" class="form-control" rows="3" dir="rtl"></textarea>
+                <span asp-validation-for="DescriptionAr" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="DescriptionEn" class="form-label">@T["description_en"]</label>
+                <textarea asp-for="DescriptionEn" class="form-control" rows="3" dir="ltr"></textarea>
+                <span asp-validation-for="DescriptionEn" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ParentCategoryId" class="form-label">@T["parent_category"]</label>
+                <select asp-for="ParentCategoryId" asp-items="Model.Parents" class="form-select">
+                    <option value="">@T["no_parent"]</option>
+                </select>
+                <span asp-validation-for="ParentCategoryId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Slug" class="form-label">@T["slug"]</label>
+                <input asp-for="Slug" class="form-control" dir="ltr" placeholder="@T["slug_hint"]" />
+                <span asp-validation-for="Slug" class="text-danger small"></span>
+            </div>
+            <div class="col-md-2">
+                <label asp-for="SortOrder" class="form-label">@T["sort_order"]</label>
+                <input asp-for="SortOrder" type="number" class="form-control" />
+                <span asp-validation-for="SortOrder" class="text-danger small"></span>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <div class="form-check mb-2">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label">@T["active"]</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="image" class="form-label">@T["image"]</label>
+                <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp" class="form-control" />
+                <div class="form-text">@T["image_hint"]</div>
+                <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                @Html.ValidationMessage("image", new { @class = "text-danger small" })
+            </div>
+            @if (Model.ImageUrl is not null)
+            {
+                <div class="col-md-6 d-flex align-items-center gap-3">
+                    <img src="@Model.ImageUrl" class="thumb" style="width:80px;height:80px" alt="" />
+                    <div class="form-check">
+                        <input asp-for="RemoveImage" class="form-check-input" />
+                        <label asp-for="RemoveImage" class="form-check-label">@T["remove_image"]</label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card-footer bg-white d-flex gap-2">
+        <button type="submit" class="btn btn-honey">@T["save"]</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">@T["cancel"]</a>
+    </div>
+</form>

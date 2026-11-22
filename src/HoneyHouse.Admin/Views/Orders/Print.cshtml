@@ -1,0 +1,62 @@
+@model HoneyHouse.Application.Features.Orders.AdminOrderDetailDto
+@{
+    Layout = null;
+    var o = Model.Order;
+}
+<!DOCTYPE html>
+<html lang="@T.Language" dir="@(T.IsArabic ? "rtl" : "ltr")">
+<head>
+    <meta charset="utf-8" />
+    <title>@T["invoice"] @o.OrderNumber</title>
+    <link rel="stylesheet" href="@(T.IsArabic ? "/lib/bootstrap/dist/css/bootstrap.rtl.min.css" : "/lib/bootstrap/dist/css/bootstrap.min.css")" />
+    <style>
+        body { padding: 24px; font-size: 14px; }
+        @@media print { .no-print { display: none; } body { padding: 0; } }
+        .ltr { direction: ltr; unicode-bidi: embed; }
+    </style>
+</head>
+<body>
+<div class="no-print mb-3"><button onclick="window.print()" class="btn btn-dark">🖨 @T["print"]</button></div>
+<div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+    <div>
+        <h1 class="h3 mb-0">🍯 @T["brand"]</h1>
+        <div class="text-muted">@T["invoice"]</div>
+    </div>
+    <div class="text-end">
+        <div class="fw-bold ltr">@o.OrderNumber</div>
+        <div class="ltr">@Fmt.DateTime(o.CreatedAt)</div>
+        <div>@T[$"method_{o.PaymentMethod}"] · @T[$"payment_{o.PaymentStatus}"]</div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-6">
+        <div class="fw-semibold">@T["ship_to"]</div>
+        <div>@o.ShippingAddress.RecipientName</div>
+        <div class="ltr">@o.ShippingAddress.Phone</div>
+        <div>@o.ShippingAddress.Governorate – @o.ShippingAddress.City</div>
+        <div>@o.ShippingAddress.AddressLine</div>
+        @if (o.ShippingAddress.Landmark is not null) { <div>@o.ShippingAddress.Landmark</div> }
+    </div>
+    <div class="col-6">
+        @if (!string.IsNullOrWhiteSpace(o.Notes)) { <div class="fw-semibold">@T["customer_notes"]</div><div>@o.Notes</div> }
+        @if (o.TrackingNumber is not null) { <div class="mt-2">@T["tracking_number"]: <span class="ltr">@o.TrackingNumber</span></div> }
+    </div>
+</div>
+<table class="table table-bordered">
+    <thead class="table-light"><tr><th>@T["product"]</th><th class="text-end">@T["unit_price"]</th><th class="text-end">@T["qty_sold"]</th><th class="text-end">@T["total"]</th></tr></thead>
+    <tbody>
+    @foreach (var i in o.Items)
+    {
+        <tr><td>@i.ProductName (@i.VariantLabel)</td><td class="text-end">@Fmt.Money(i.UnitPrice, T)</td><td class="text-end">@i.Quantity</td><td class="text-end">@Fmt.Money(i.LineTotal, T)</td></tr>
+    }
+    </tbody>
+    <tfoot>
+        <tr><td colspan="3" class="text-end">@T["subtotal"]</td><td class="text-end">@Fmt.Money(o.Subtotal, T)</td></tr>
+        @if (o.DiscountAmount > 0) { <tr><td colspan="3" class="text-end">@T["discount"]</td><td class="text-end">- @Fmt.Money(o.DiscountAmount, T)</td></tr> }
+        <tr><td colspan="3" class="text-end">@T["shipping_fee"]</td><td class="text-end">@Fmt.Money(o.ShippingFee, T)</td></tr>
+        <tr class="fw-bold"><td colspan="3" class="text-end">@(o.PaymentMethod == PaymentMethod.CashOnDelivery && o.PaymentStatus != PaymentStatus.Paid ? T["amount_to_collect"] : T["total"])</td><td class="text-end">@Fmt.Money(o.Total, T)</td></tr>
+    </tfoot>
+</table>
+<p class="text-center text-muted small mt-4">@T["invoice_thanks"]</p>
+</body>
+</html>

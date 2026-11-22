@@ -1,0 +1,84 @@
+@model CouponForm
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = T[isNew ? "coupon_add" : "coupon_edit"];
+}
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)" class="card shadow-sm" novalidate>
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+        @if (Model.UsedCount > 0) { <div class="alert alert-info py-2">@T["coupon_used_times", Model.UsedCount]</div> }
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="Code" class="form-label">@T["coupon_code"] *</label>
+                <input asp-for="Code" class="form-control text-uppercase" dir="ltr" placeholder="RAMADAN10" />
+                <span asp-validation-for="Code" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="DiscountType" class="form-label">@T["discount_type"] *</label>
+                <select asp-for="DiscountType" class="form-select">
+                    <option value="Percentage">@T["discount_Percentage"]</option>
+                    <option value="FixedAmount">@T["discount_FixedAmount"]</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Value" class="form-label">@T["discount_value"] *</label>
+                <input asp-for="Value" type="number" step="0.01" min="0" class="form-control" />
+                <span asp-validation-for="Value" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="DescriptionAr" class="form-label">@T["description_ar"]</label>
+                <input asp-for="DescriptionAr" class="form-control" dir="rtl" />
+                <span asp-validation-for="DescriptionAr" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="DescriptionEn" class="form-label">@T["description_en"]</label>
+                <input asp-for="DescriptionEn" class="form-control" dir="ltr" />
+                <span asp-validation-for="DescriptionEn" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="MinOrderAmount" class="form-label">@T["min_order"] (@T["currency"])</label>
+                <input asp-for="MinOrderAmount" type="number" step="0.01" min="0" class="form-control" />
+                <span asp-validation-for="MinOrderAmount" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="MaxDiscountAmount" class="form-label">@T["max_discount"] (@T["currency"])</label>
+                <input asp-for="MaxDiscountAmount" type="number" step="0.01" min="0" class="form-control" />
+                <div class="form-text">@T["max_discount_hint"]</div>
+                <span asp-validation-for="MaxDiscountAmount" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="UsageLimit" class="form-label">@T["usage_limit"]</label>
+                <input asp-for="UsageLimit" type="number" min="1" class="form-control" />
+                <div class="form-text">@T["empty_unlimited"]</div>
+                <span asp-validation-for="UsageLimit" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="UsageLimitPerUser" class="form-label">@T["usage_limit_per_user"]</label>
+                <input asp-for="UsageLimitPerUser" type="number" min="1" class="form-control" />
+                <span asp-validation-for="UsageLimitPerUser" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="StartsAt" class="form-label">@T["starts_at"]</label>
+                <input asp-for="StartsAt" type="datetime-local" class="form-control" />
+                <span asp-validation-for="StartsAt" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ExpiresAt" class="form-label">@T["expires_at"]</label>
+                <input asp-for="ExpiresAt" type="datetime-local" class="form-control" />
+                <span asp-validation-for="ExpiresAt" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check mb-2">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label">@T["active"]</label>
+                </div>
+            </div>
+            <div class="col-12 form-text">@T["cairo_time_hint"]</div>
+        </div>
+    </div>
+    <div class="card-footer bg-white d-flex gap-2">
+        <button type="submit" class="btn btn-honey">@T["save"]</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">@T["cancel"]</a>
+    </div>
+</form>

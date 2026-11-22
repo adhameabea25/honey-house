@@ -1,0 +1,21 @@
+@model Pager
+@{
+    string Url(int page)
+    {
+        var q = Context.Request.Query.Where(kv => kv.Key != "page")
+            .SelectMany(kv => kv.Value.Select(v => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(v ?? "")}"))
+            .Append($"page={page}");
+        return Context.Request.Path + "?" + string.Join("&", q);
+    }
+}
+<div class="d-flex justify-content-between align-items-center p-3 small text-muted">
+    <span>@T["total_count", Model.TotalCount]</span>
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="d-flex align-items-center gap-2">
+            <a class="btn btn-sm btn-outline-secondary @(Model.Page <= 1 ? "disabled" : "")" href="@Url(Model.Page - 1)">@T["previous"]</a>
+            <span>@T["page_of", Model.Page, Model.TotalPages]</span>
+            <a class="btn btn-sm btn-outline-secondary @(Model.Page >= Model.TotalPages ? "disabled" : "")" href="@Url(Model.Page + 1)">@T["next"]</a>
+        </nav>
+    }
+</div>

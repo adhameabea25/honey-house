@@ -1,0 +1,46 @@
+@model StaffForm
+@{ ViewData["Title"] = T["staff_add"]; }
+<h1 class="h3 mb-3">@T["staff_add"]</h1>
+<form method="post" asp-action="Create" class="card shadow-sm" novalidate autocomplete="off">
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="FullName" class="form-label">@T["full_name"] *</label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Email" class="form-label">@T["email"] *</label>
+                <input asp-for="Email" type="email" class="form-control" dir="ltr" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PhoneNumber" class="form-label">@T["phone"] *</label>
+                <input asp-for="PhoneNumber" class="form-control" dir="ltr" placeholder="01012345678" />
+                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Password" class="form-label">@T["initial_password"] *</label>
+                <input asp-for="Password" type="password" class="form-control" dir="ltr" autocomplete="new-password" />
+                <div class="form-text">@T["password_weak"]</div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <label class="form-label">@T["roles"] *</label>
+                @foreach (var r in new[] { Roles.Manager, Roles.Admin })
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Roles" value="@r" id="role-@r" checked="@Model.Roles.Contains(r)" />
+                        <label class="form-check-label" for="role-@r">@T[$"role_{r}"] <small class="text-muted">— @T[$"role_hint_{r}"]</small></label>
+                    </div>
+                }
+                <span asp-validation-for="Roles" class="text-danger small"></span>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-white d-flex gap-2">
+        <button type="submit" class="btn btn-honey">@T["save"]</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">@T["cancel"]</a>
+    </div>
+</form>

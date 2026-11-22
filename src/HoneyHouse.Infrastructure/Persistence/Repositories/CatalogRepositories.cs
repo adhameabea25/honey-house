@@ -31,6 +31,7 @@ public sealed class ProductRepository(AppDbContext db) : GenericRepository<Produ
         var q = Set.AsNoTracking().AsQueryable();
 
         if (c.ActiveOnly) q = q.Where(p => p.IsActive && p.Category.IsActive && p.Variants.Any(v => v.IsActive));
+        if (c.IsActive is { } isActive) q = q.Where(p => p.IsActive == isActive);
         if (!string.IsNullOrWhiteSpace(c.Search))
         {
             var term = c.Search;

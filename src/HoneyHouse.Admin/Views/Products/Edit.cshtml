@@ -1,0 +1,106 @@
+@model ProductForm
+@{
+    var p = Model.Existing!;
+    ViewData["Title"] = T.IsArabic ? p.NameAr : p.NameEn;
+}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">@T["nav_products"]</a></li>
+        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+    </ol>
+</nav>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 m-0">@ViewData["Title"]</h1>
+    <div class="d-flex gap-2 align-items-center small text-muted">
+        <span>⭐ @Fmt.Number(p.AverageRating) (@p.ReviewCount)</span>
+        <form method="post" asp-action="Delete" asp-route-id="@p.Id" data-confirm="@T["confirm_delete_product"]">
+            <button class="btn btn-sm btn-outline-danger">@T["product_delete"]</button>
+        </form>
+    </div>
+</div>
+
+<form method="post" asp-action="Edit" asp-route-id="@p.Id" class="card shadow-sm mb-4" novalidate>
+    <div class="card-header bg-white fw-semibold">@T["product_info"]</div>
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+        <partial name="_ProductFields" model="Model" />
+    </div>
+    <div class="card-footer bg-white"><button type="submit" class="btn btn-honey">@T["save"]</button></div>
+</form>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">@T["variants"]</span>
+        <a asp-action="AddVariant" asp-route-id="@p.Id" class="btn btn-sm btn-honey">+ @T["variant_add"]</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table mb-0" data-testid="variants">
+            <thead><tr><th>@T["sku"]</th><th>@T["weight"]</th><th>@T["price"]</th><th>@T["stock"]</th><th>@T["status"]</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var v in p.Variants.OrderBy(v => v.WeightGrams))
+            {
+                <tr class="@(v.IsActive ? "" : "text-muted")">
+                    <td class="ltr small">@v.Sku</td>
+                    <td>@(T.IsArabic ? v.LabelAr : v.LabelEn) <small class="text-muted">(@v.WeightGrams g)</small></td>
+                    <td class="text-nowrap">
+                        @Fmt.Money(v.Price, T)
+                        @if (v.CompareAtPrice is { } cmp) { <del class="small text-muted">@Fmt.Number(cmp)</del> }
+                    </td>
+                    <td><span class="badge @(v.StockQuantity == 0 ? "bg-danger" : v.IsLowStock ? "bg-warning text-dark" : "bg-light text-dark")">@v.StockQuantity</span></td>
+                    <td><span class="badge @(v.IsActive ? "bg-success" : "bg-secondary")">@T[v.IsActive ? "active" : "inactive"]</span></td>
+                    <td class="text-end text-nowrap">
+                        <a asp-action="EditVariant" asp-route-id="@p.Id" asp-route-variantId="@v.Id" class="btn btn-sm btn-outline-primary">@T["edit"]</a>
+                        <a asp-controller="Inventory" asp-action="Variant" asp-route-id="@v.Id" class="btn btn-sm btn-outline-secondary">@T["nav_inventory"]</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white fw-semibold">@T["images"]</div>
+    <div class="card-body">
+        <div class="row g-3 mb-3" data-testid="images">
+            @foreach (var img in p.Images.OrderBy(i => i.SortOrder))
+            {
+                <div class="col-6 col-md-3 col-xl-2">
+                    <div class="card h-100 @(img.IsMain ? "border-warning border-2" : "")">
+                        <img src="@img.Url" class="card-img-top" style="aspect-ratio:1;object-fit:cover" alt="@img.AltText" />
+                        <div class="card-body p-2 d-flex flex-wrap gap-1 justify-content-center">
+                            @if (img.IsMain)
+                            {
+                                <span class="badge bg-warning text-dark">@T["main_image"]</span>
+                            }
+                            else
+                            {
+                                <form method="post" asp-action="SetMainImage" asp-route-id="@p.Id" asp-route-imageId="@img.Id">
+                                    <button class="btn btn-sm btn-outline-secondary">@T["make_main"]</button>
+                                </form>
+                            }
+                            <form method="post" asp-action="DeleteImage" asp-route-id="@p.Id" asp-route-imageId="@img.Id" data-confirm="@T["confirm_delete"]">
+                                <button class="btn btn-sm btn-outline-danger">@T["delete"]</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (p.Images.Count == 0) { <div class="col-12 text-muted">@T["no_images"]</div> }
+        </div>
+        <form method="post" asp-action="UploadImages" asp-route-id="@p.Id" enctype="multipart/form-data" class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label for="images" class="form-label">@T["upload_images"]</label>
+                <input type="file" id="images" name="images" multiple accept="image/jpeg,image/png,image/webp" class="form-control" required />
+                <div class="form-text">@T["image_hint"]</div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-check mb-2">
+                    <input type="checkbox" id="isMain" name="isMain" value="true" class="form-check-input" />
+                    <label for="isMain" class="form-check-label">@T["set_as_main"]</label>
+                </div>
+            </div>
+            <div class="col-md-3"><button type="submit" class="btn btn-dark">@T["upload"]</button></div>
+        </form>
+    </div>
+</div>

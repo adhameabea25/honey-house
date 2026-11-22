@@ -1,0 +1,28 @@
+:root {
+  --honey: #e8a317;
+  --honey-dark: #5b3a06;
+  --honey-light: #fff7e6;
+}
+
+body { background: #faf8f4; }
+body.admin { font-size: .95rem; }
+html[dir="rtl"] body { font-family: "Segoe UI", Tahoma, "Noto Sans Arabic", Arial, sans-serif; }
+
+.bg-honey-dark { background: var(--honey-dark); }
+.btn-honey { background: var(--honey); border-color: var(--honey); color: #2b1b00; font-weight: 600; }
+.btn-honey:hover, .btn-honey:focus { background: #c98a0f; border-color: #c98a0f; color: #fff; }
+
+.sidebar { background: #fff; border-inline-end: 1px solid #eee; }
+@media (min-width: 992px) { .sidebar { min-height: calc(100vh - 56px); } }
+.sidebar .nav-link { color: #333; padding: .55rem 1.25rem; border-inline-start: 3px solid transparent; }
+.sidebar .nav-link:hover { background: var(--honey-light); }
+.sidebar .nav-link.active { background: var(--honey-light); border-inline-start-color: var(--honey); font-weight: 600; color: var(--honey-dark); }
+.sidebar .nav-section { font-size: .75rem; color: #999; text-transform: uppercase; padding: .9rem 1.25rem .25rem; }
+
+.kpi-card .kpi-value { font-size: 1.6rem; font-weight: 700; }
+.kpi-card .kpi-label { color: #777; font-size: .85rem; }
+.table td, .table th { vertical-align: middle; }
+.thumb { width: 48px; height: 48px; object-fit: cover; border-radius: .375rem; background: #eee; }
+.ltr { direction: ltr; unicode-bidi: embed; }
+html[dir="rtl"] div.ltr { text-align: right; }
+input[type="date"], input[type="datetime-local"] { min-width: 0; }

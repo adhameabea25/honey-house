@@ -121,4 +121,79 @@
 - Replace `LoggingEmailSender` with a real email provider and `LocalFileStorage` with blob storage if running more than one server.
 - Run migrations as a deployment step (`Seed:ApplyMigrations=false` on the web servers).
 
-## Next: Phase 3 — Admin Dashboard (ASP.NET Core MVC)
+## Phase 3 — Admin dashboard tasks
+| # | Task | Status |
+|---|------|--------|
+| 3.1 | MVC project, staff sign-in, Arabic/English (RTL/LTR) layout | ✅ Done |
+| 3.2 | Dashboard home: KPIs and charts | ✅ Done |
+| 3.3 | Categories, products, variants, images | ✅ Done |
+| 3.4 | Inventory | ✅ Done |
+| 3.5 | Orders and status changes | ✅ Done |
+| 3.6 | Coupons, reviews, shipping fees | ✅ Done |
+| 3.7 | Users and staff | ✅ Done |
+
+The dashboard (`src/HoneyHouse.Admin`) is a separate ASP.NET Core MVC app that reuses the Application and
+Infrastructure layers directly (same services, rules and database as the API; no HTTP calls to the API).
+
+### 2026-11-22 — Task 3.1
+- `HoneyHouse.Admin` MVC project + `HoneyHouse.Admin.Tests` (WebApplicationFactory against a throw-away SQL Server database, form posts with real antiforgery tokens).
+- Cookie authentication (`hh_admin`, HttpOnly, SameSite=Strict, 8 h sliding). Only Admin and Manager can sign in; disabled/locked accounts are refused and failed passwords count toward the same lockout as the API.
+- The account is re-checked on every request: disabling a user, removing their staff role or changing their password ends the dashboard session immediately; role changes refresh the cookie.
+- Antiforgery validation on every POST; local-only return URLs.
+- Arabic by default (RTL, `bootstrap.rtl`), English via the language button (culture cookie, LTR). UI text lives in `Localization/AdminText*.cs` and falls back to the shared API messages for error codes. Validation and model-binding messages are localized too.
+- Layout: top bar (language, user and role, sign out) and a sidebar that collapses on phones; Users menu is Admin-only. Localized 404/error pages.
+- Development settings share the API's uploads folder so product images added in the dashboard are served by the API.
+- Build: 0 errors, 0 warnings. Tests: 16 admin tests passed.
+
+### 2026-11-22 — Task 3.2
+- Dashboard home (`/`): quick ranges (7/30/90/365 days) or custom dates in Cairo local time; KPI cards (revenue and paid revenue, orders and cancellations, average order, items sold, new customers, discounts).
+- Charts with Chart.js 4.4.1 (served locally from `wwwroot/lib/chartjs`, MIT): daily or monthly sales (bars = revenue, line = orders; monthly when the range is over 92 days) and orders by status. Charts mirror correctly in RTL.
+- Tables: top 5 products, sales by governorate, latest orders (linked to order details), low-stock list; cards for orders awaiting review and low-stock count linking to filtered lists.
+- Sales figures are Admin-only (same rule as the API); Managers see the operational cards and lists only.
+- Build: 0 errors, 0 warnings. Tests: 24 admin tests passed.
+
+### 2026-11-22 — Task 3.3
+- Categories: two-level tree list, add/edit (Arabic and English names and descriptions, parent, slug, order, active, image upload with replace/remove), delete (refused with a clear message while it has products or sub-categories). Uploaded files are cleaned up when a save fails or an image is replaced.
+- Products: list with search (Arabic or English), category and active/inactive filters, paging; create with the first weight option and opening stock (recorded as an inventory transaction); edit details, featured and visibility; soft delete.
+- Weight options: add and edit SKU, weight, Arabic/English label, price, compare-at price, low-stock threshold, active. Stock is read-only here and changes only through Inventory, so every change is audited.
+- Images: multi-file upload (JPG/PNG/WEBP up to 5 MB), set main image, delete (the next image becomes main).
+- Forms reuse the API's FluentValidation validators; errors are shown next to each field in the current language. Numbers keep Latin digits and "." decimals in the Arabic UI so prices bind the same way in both languages.
+- Small Application change: `ProductSearchCriteria.IsActive` filter so the dashboard can list hidden products only.
+- Note: the sample catalogue seeds placeholder image paths (`/images/products/...`) that have no files yet; real photos can now be uploaded from the dashboard.
+- Build: 0 errors, 0 warnings. Tests: 33 admin tests passed; API catalog tests still pass.
+
+### 2026-11-22 — Task 3.4
+- Inventory list: every weight option with stock, alert threshold and state (in stock / low / out / inactive); search by product name or SKU, low-stock filter, paging. The dashboard and product pages link here.
+- Per-option page: current stock, adjust form (Restock adds, Adjustment adds or removes with a note) and full history with date (Cairo time), type, change, balance, staff member, note, and a link to the order for sales and cancellations.
+- Rules come from the shared service: stock never below zero, restock must be positive, Sale/Return/Cancellation cannot be entered by hand. A clash with a sale at the same moment shows a "try again" message instead of an error page.
+- Small Application change: `IInventoryService.GetAsync(variantId)`.
+- Build: 0 errors, 0 warnings. Tests: 40 admin tests passed.
+
+### 2026-11-22 — Task 3.5
+- Orders list: filters for status, payment status, payment method, date range (Cairo days) and search (order number, customer name or phone); paging; CSV export of the filtered list (UTF-8 with BOM so Excel shows Arabic; values that look like formulas are neutralised; up to 5,000 rows).
+- Order page: items with SKU, subtotal, coupon discount, shipping and total; customer and shipping address; status history; payments; customer notes.
+- Status change: only the next statuses allowed by the order state machine are offered, with an optional note (shown to the customer in tracking) and tracking number. Cancelling returns stock and releases the coupon; marking a cash-on-delivery order Delivered records the payment; Returned puts stock back. All through the same `OrderService` as the API, and the staff member is recorded.
+- "Mark as paid" for orders whose payment is still pending.
+- Printable invoice / packing slip (shows "amount to collect" for unpaid cash-on-delivery orders).
+- Build: 0 errors, 0 warnings. Tests: 48 admin tests passed.
+
+### 2026-11-22 — Task 3.6
+- Coupons (Admin): list with search, active filter and a state badge (active / scheduled / expired / inactive) plus usage count; add and edit (code, Arabic/English description, percentage or fixed amount, minimum order, maximum discount, total and per-customer limits, start and end in Cairo time); delete only while unused, otherwise a message suggests deactivating.
+- Reviews (Admin and Manager): tabs for pending / published / all, stars, product link, customer, verified-purchase badge; publish, hide and delete. Product rating and count update immediately.
+- Shipping fees (Admin): all 27 governorates with fee and delivery on/off, saved per row; new orders use the new fee at once.
+- Coupons and shipping are Admin-only (same as the API); Managers do not see them in the menu and get the access-denied page if they open the URL.
+- Build: 0 errors, 0 warnings. Tests: 57 admin tests passed.
+
+### 2026-11-22 — Task 3.7
+- Users (Admin): list with search (name, email, phone) and role filter; status and "locked" badges.
+- User page: details, link to the customer's orders, roles (Admin / Manager / Customer) and enable/disable. An admin cannot disable or demote themselves. Disabling signs the user out of the app (refresh tokens revoked) and the dashboard (cookie re-check) at once; promoting a manager refreshes their menu on the next click.
+- Add staff member: name, email, Egyptian mobile, initial password (same strength rule as the app), roles.
+- Build: 0 errors, 0 warnings. Tests: 65 admin tests passed.
+
+## Phase 3 summary
+- Admin dashboard with 13 controllers covering every admin feature of the API; Arabic RTL by default and English LTR; works on phones (sidebar collapses; checked every page for horizontal overflow at iPhone width).
+- 220 automated tests pass: 68 unit, 87 API integration, 65 dashboard (real app, real SQL Server, real form posts with antiforgery tokens).
+- Small Application additions only (no API behaviour change): product active/inactive filter, `IInventoryService.GetAsync`.
+- Known limits: the admin user list loads users in memory before paging (fine for thousands, revisit for very large customer bases); sales-by-governorate shows the governorate name stored on the order (Arabic); sample products have placeholder image paths until real photos are uploaded.
+
+## Next: Phase 4 — Flutter mobile app

@@ -1,0 +1,46 @@
+@model ReviewListViewModel
+@{
+    ViewData["Title"] = T["nav_reviews"];
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+<h1 class="h3 mb-3">@T["nav_reviews"]</h1>
+<ul class="nav nav-pills mb-3">
+    @foreach (var s in new[] { "pending", "approved", "all" })
+    {
+        <li class="nav-item"><a class="nav-link @(Model.Status == s ? "active bg-honey-dark" : "text-dark")" asp-action="Index" asp-route-status="@s">@T[$"reviews_{s}"]</a></li>
+    }
+</ul>
+<div class="card shadow-sm">
+    <ul class="list-group list-group-flush" data-testid="reviews">
+        @foreach (var r in Model.Result.Items)
+        {
+            <li class="list-group-item py-3">
+                <div class="d-flex flex-wrap justify-content-between gap-2">
+                    <div>
+                        <div>
+                            <span class="text-warning">@(new string('★', r.Rating))</span><span class="text-muted">@(new string('☆', 5 - r.Rating))</span>
+                            <a asp-controller="Products" asp-action="Edit" asp-route-id="@r.ProductId" class="ms-2 fw-semibold">@(T.IsArabic ? r.ProductNameAr : r.ProductNameEn)</a>
+                            @if (r.IsVerifiedPurchase) { <span class="badge bg-success-subtle text-success-emphasis">@T["verified_purchase"]</span> }
+                            <span class="badge @(r.IsApproved ? "bg-success" : "bg-warning text-dark")">@T[r.IsApproved ? "review_status_approved" : "review_status_pending"]</span>
+                        </div>
+                        <div class="small text-muted">@r.UserName · <span class="ltr">@r.UserEmail</span> · <span class="ltr">@Fmt.DateTime(r.CreatedAt)</span></div>
+                        @if (!string.IsNullOrWhiteSpace(r.Comment)) { <p class="mb-0 mt-2">@r.Comment</p> }
+                    </div>
+                    <div class="d-flex gap-1 align-items-start">
+                        <form method="post" asp-action="Moderate" asp-route-id="@r.Id">
+                            <input type="hidden" name="approved" value="@(r.IsApproved ? "false" : "true")" />
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            <button class="btn btn-sm @(r.IsApproved ? "btn-outline-secondary" : "btn-success")">@T[r.IsApproved ? "review_hide" : "review_approve"]</button>
+                        </form>
+                        <form method="post" asp-action="Delete" asp-route-id="@r.Id" data-confirm="@T["confirm_delete"]">
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            <button class="btn btn-sm btn-outline-danger">@T["delete"]</button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        }
+        @if (Model.Result.Items.Count == 0) { <li class="list-group-item text-center text-muted">@T["no_results"]</li> }
+    </ul>
+    <partial name="_Pager" model="Pager.From(Model.Result)" />
+</div>

@@ -1,0 +1,26 @@
+@{
+    var isAr = T.IsArabic;
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+<!DOCTYPE html>
+<html lang="@T.Language" dir="@(isAr ? "rtl" : "ltr")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @T["app_title"]</title>
+    <link rel="stylesheet" href="@(isAr ? "/lib/bootstrap/dist/css/bootstrap.rtl.min.css" : "/lib/bootstrap/dist/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="auth-page">
+<div class="container">
+    <div class="d-flex justify-content-end pt-3">
+        <form method="post" asp-controller="Language" asp-action="Set" class="m-0">
+            <input type="hidden" name="culture" value="@(isAr ? "en" : "ar")" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            <button type="submit" class="btn btn-sm btn-outline-secondary" data-testid="lang-switch">@T["language_switch"]</button>
+        </form>
+    </div>
+    @RenderBody()
+</div>
+</body>
+</html>

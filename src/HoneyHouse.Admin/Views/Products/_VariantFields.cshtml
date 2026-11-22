@@ -1,0 +1,70 @@
+@model VariantForm
+@{
+    // Field names are prefixed ("Variant.") when embedded in the new-product form
+    var prefix = ViewData.TemplateInfo.HtmlFieldPrefix;
+    var isNew = Model.Id == 0;
+}
+<div class="row g-3">
+    <div class="col-md-3">
+        <label asp-for="Sku" class="form-label">@T["sku"] *</label>
+        <input asp-for="Sku" class="form-control text-uppercase" dir="ltr" />
+        <span asp-validation-for="Sku" class="text-danger small"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="WeightGrams" class="form-label">@T["weight_grams"] *</label>
+        <input asp-for="WeightGrams" type="number" min="1" class="form-control" />
+        <span asp-validation-for="WeightGrams" class="text-danger small"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="LabelAr" class="form-label">@T["label_ar"] *</label>
+        <input asp-for="LabelAr" class="form-control" dir="rtl" placeholder="250 جرام" />
+        <span asp-validation-for="LabelAr" class="text-danger small"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="LabelEn" class="form-label">@T["label_en"] *</label>
+        <input asp-for="LabelEn" class="form-control" dir="ltr" placeholder="250 g" />
+        <span asp-validation-for="LabelEn" class="text-danger small"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Price" class="form-label">@T["price"] (@T["currency"]) *</label>
+        <input asp-for="Price" type="number" step="0.01" min="0" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger small"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="CompareAtPrice" class="form-label">@T["compare_at_price"]</label>
+        <input asp-for="CompareAtPrice" type="number" step="0.01" min="0" class="form-control" />
+        <div class="form-text">@T["compare_at_hint"]</div>
+        <span asp-validation-for="CompareAtPrice" class="text-danger small"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="StockQuantity" class="form-label">@T[isNew ? "opening_stock" : "stock"]</label>
+        @if (isNew)
+        {
+            <input asp-for="StockQuantity" type="number" min="0" class="form-control" />
+        }
+        else
+        {
+            <input value="@Model.StockQuantity" class="form-control" disabled />
+            <div class="form-text">@T["stock_via_inventory"]</div>
+        }
+        <span asp-validation-for="StockQuantity" class="text-danger small"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="LowStockThreshold" class="form-label">@T["low_stock_threshold"]</label>
+        <input asp-for="LowStockThreshold" type="number" min="0" class="form-control" />
+        <span asp-validation-for="LowStockThreshold" class="text-danger small"></span>
+    </div>
+    @if (string.IsNullOrEmpty(prefix))
+    {
+        <div class="col-12">
+            <div class="form-check">
+                <input asp-for="IsActive" class="form-check-input" />
+                <label asp-for="IsActive" class="form-check-label">@T["active"]</label>
+            </div>
+        </div>
+    }
+    else
+    {
+        <input type="hidden" asp-for="IsActive" />
+    }
+</div>

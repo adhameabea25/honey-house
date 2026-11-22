@@ -1,0 +1,83 @@
+@model InventoryVariantViewModel
+@{
+    var i = Model.Item;
+    var name = T.IsArabic ? i.ProductNameAr : i.ProductNameEn;
+    var label = T.IsArabic ? i.LabelAr : i.LabelEn;
+    ViewData["Title"] = $"{name} – {label}";
+}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">@T["nav_inventory"]</a></li>
+        <li class="breadcrumb-item active">@ViewData["Title"]</li>
+    </ol>
+</nav>
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h1 class="h5">@name</h1>
+                <div class="text-muted mb-3">@label · <span class="ltr">@i.Sku</span></div>
+                <div class="kpi-label">@T["current_stock"]</div>
+                <div class="display-5 fw-bold @(i.StockQuantity == 0 ? "text-danger" : i.IsLowStock ? "text-warning" : "")" data-testid="current-stock">@i.StockQuantity</div>
+                <div class="small text-muted">@T["low_stock_threshold"]: @i.LowStockThreshold</div>
+                <a asp-controller="Products" asp-action="Edit" asp-route-id="@i.ProductId" class="small">@T["open_product"]</a>
+            </div>
+        </div>
+        <form method="post" asp-action="Variant" asp-route-id="@i.VariantId" class="card shadow-sm" novalidate>
+            <div class="card-header bg-white fw-semibold">@T["adjust_stock"]</div>
+            <div class="card-body">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" role="alert"></div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Form.Type">@T["movement_type"]</label>
+                    <select asp-for="Form.Type" class="form-select">
+                        <option value="Restock">@T["tx_Restock"] (+)</option>
+                        <option value="Adjustment">@T["tx_Adjustment"] (±)</option>
+                    </select>
+                    <span asp-validation-for="Form.Type" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Form.QuantityChange">@T["quantity_change"]</label>
+                    <input asp-for="Form.QuantityChange" type="number" class="form-control" />
+                    <div class="form-text">@T["quantity_change_hint"]</div>
+                    <span asp-validation-for="Form.QuantityChange" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Form.Note">@T["note"]</label>
+                    <input asp-for="Form.Note" class="form-control" placeholder="@T["adjust_note_hint"]" />
+                    <span asp-validation-for="Form.Note" class="text-danger small"></span>
+                </div>
+                <button type="submit" class="btn btn-honey w-100">@T["save"]</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-semibold">@T["stock_history"]</div>
+            <div class="table-responsive">
+                <table class="table table-sm mb-0" data-testid="history">
+                    <thead><tr><th>@T["date"]</th><th>@T["movement_type"]</th><th>@T["change"]</th><th>@T["balance"]</th><th>@T["by"]</th><th>@T["note"]</th></tr></thead>
+                    <tbody>
+                    @foreach (var t in Model.History.Items)
+                    {
+                        <tr>
+                            <td class="ltr small text-nowrap">@Fmt.DateTime(t.CreatedAt)</td>
+                            <td>@T[$"tx_{t.Type}"]
+                                @if (t.OrderId is { } oid)
+                                {
+                                    <a asp-controller="Orders" asp-action="Details" asp-route-id="@oid" class="small ltr">@(Model.OrderNumbers.GetValueOrDefault(oid) ?? $"#{oid}")</a>
+                                }
+                            </td>
+                            <td class="fw-semibold ltr @(t.QuantityChange > 0 ? "text-success" : "text-danger")">@(t.QuantityChange > 0 ? "+" : "")@t.QuantityChange</td>
+                            <td>@t.StockAfter</td>
+                            <td class="small">@(t.CreatedByUserId is { } uid ? Model.UserNames.GetValueOrDefault(uid) ?? "—" : T["system"])</td>
+                            <td class="small">@t.Note</td>
+                        </tr>
+                    }
+                    @if (Model.History.Items.Count == 0) { <tr><td colspan="6" class="text-center text-muted">@T["no_results"]</td></tr> }
+                    </tbody>
+                </table>
+            </div>
+            <partial name="_Pager" model="Pager.From(Model.History)" />
+        </div>
+    </div>
+</div>

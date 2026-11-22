@@ -1,0 +1,49 @@
+@model InventoryListViewModel
+@{ ViewData["Title"] = T["nav_inventory"]; }
+<h1 class="h3 mb-3">@T["nav_inventory"]</h1>
+<form method="get" class="card card-body shadow-sm mb-3">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label small" for="search">@T["search"]</label>
+            <input id="search" name="search" value="@Model.Search" class="form-control" placeholder="@T["inventory_search_hint"]" />
+        </div>
+        <div class="col-md-3">
+            <div class="form-check mb-2">
+                <input type="checkbox" id="lowStockOnly" name="lowStockOnly" value="true" class="form-check-input" checked="@Model.LowStockOnly" />
+                <label for="lowStockOnly" class="form-check-label">@T["low_stock_only"]</label>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button class="btn btn-dark" type="submit">@T["filter"]</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">@T["reset"]</a>
+        </div>
+    </div>
+</form>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" data-testid="inventory">
+            <thead><tr><th>@T["product"]</th><th>@T["weight"]</th><th>@T["sku"]</th><th>@T["stock"]</th><th>@T["low_stock_threshold"]</th><th>@T["status"]</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var i in Model.Result.Items)
+            {
+                <tr>
+                    <td><a asp-controller="Products" asp-action="Edit" asp-route-id="@i.ProductId" class="text-decoration-none">@(T.IsArabic ? i.ProductNameAr : i.ProductNameEn)</a></td>
+                    <td>@(T.IsArabic ? i.LabelAr : i.LabelEn)</td>
+                    <td class="ltr small">@i.Sku</td>
+                    <td><span class="badge fs-6 @(i.StockQuantity == 0 ? "bg-danger" : i.IsLowStock ? "bg-warning text-dark" : "bg-light text-dark")">@i.StockQuantity</span></td>
+                    <td>@i.LowStockThreshold</td>
+                    <td>
+                        @if (!i.IsActive || !i.ProductIsActive) { <span class="badge bg-secondary">@T["inactive"]</span> }
+                        else if (i.StockQuantity == 0) { <span class="badge bg-danger">@T["out_of_stock"]</span> }
+                        else if (i.IsLowStock) { <span class="badge bg-warning text-dark">@T["low_stock"]</span> }
+                        else { <span class="badge bg-success">@T["in_stock"]</span> }
+                    </td>
+                    <td class="text-end"><a asp-action="Variant" asp-route-id="@i.VariantId" class="btn btn-sm btn-outline-primary">@T["adjust_stock"]</a></td>
+                </tr>
+            }
+            @if (Model.Result.Items.Count == 0) { <tr><td colspan="7" class="text-center text-muted">@T["no_results"]</td></tr> }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" model="Pager.From(Model.Result)" />
+</div>
