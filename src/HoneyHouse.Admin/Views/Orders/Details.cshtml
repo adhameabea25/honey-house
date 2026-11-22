@@ -1,0 +1,170 @@
+@model OrderDetailsViewModel
+@{
+    var d = Model.Detail;
+    var o = d.Order;
+    ViewData["Title"] = T["order_title", o.OrderNumber];
+    var canMarkPaid = o.PaymentStatus != PaymentStatus.Paid && o.Status != OrderStatus.Cancelled && o.Status != OrderStatus.Returned;
+}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">@T["nav_orders"]</a></li>
+        <li class="breadcrumb-item active ltr">@o.OrderNumber</li>
+    </ol>
+</nav>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 m-0">@T["order_title", ""] <span class="ltr">@o.OrderNumber</span></h1>
+    <div class="d-flex gap-2 align-items-center">
+        <span class="badge fs-6 @Fmt.StatusBadge(o.Status)" data-testid="order-status">@T[$"status_{o.Status}"]</span>
+        <span class="badge fs-6 @Fmt.PaymentBadge(o.PaymentStatus)" data-testid="payment-status">@T[$"payment_{o.PaymentStatus}"]</span>
+        <a asp-action="Print" asp-route-id="@o.Id" target="_blank" class="btn btn-sm btn-outline-dark">🖨 @T["print_invoice"]</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-xl-8">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold">@T["order_items"]</div>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead><tr><th>@T["product"]</th><th>@T["sku"]</th><th class="text-end">@T["unit_price"]</th><th class="text-end">@T["qty_sold"]</th><th class="text-end">@T["total"]</th></tr></thead>
+                    <tbody>
+                    @foreach (var i in o.Items)
+                    {
+                        <tr>
+                            <td>@i.ProductName <small class="text-muted">(@i.VariantLabel)</small></td>
+                            <td class="ltr small">@i.Sku</td>
+                            <td class="text-end">@Fmt.Money(i.UnitPrice, T)</td>
+                            <td class="text-end">@i.Quantity</td>
+                            <td class="text-end">@Fmt.Money(i.LineTotal, T)</td>
+                        </tr>
+                    }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr><td colspan="4" class="text-end">@T["subtotal"]</td><td class="text-end">@Fmt.Money(o.Subtotal, T)</td></tr>
+                        @if (o.DiscountAmount > 0)
+                        {
+                            <tr><td colspan="4" class="text-end">@T["discount"] @if (o.CouponCode is not null) { <span class="badge bg-light text-dark ltr">@o.CouponCode</span> }</td><td class="text-end text-success">- @Fmt.Money(o.DiscountAmount, T)</td></tr>
+                        }
+                        <tr><td colspan="4" class="text-end">@T["shipping_fee"]</td><td class="text-end">@Fmt.Money(o.ShippingFee, T)</td></tr>
+                        <tr class="fw-bold"><td colspan="4" class="text-end">@T["total"]</td><td class="text-end" data-testid="order-total">@Fmt.Money(o.Total, T)</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold">@T["status_history"]</div>
+            <ul class="list-group list-group-flush" data-testid="history">
+                @foreach (var h in o.History.OrderByDescending(h => h.ChangedAt))
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><span class="badge @Fmt.StatusBadge(h.Status)">@T[$"status_{h.Status}"]</span> @h.Note</span>
+                        <span class="small text-muted ltr">@Fmt.DateTime(h.ChangedAt)</span>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        @if (d.Payments.Count > 0)
+        {
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-white fw-semibold">@T["payments"]</div>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>@T["date"]</th><th>@T["payment_method"]</th><th>@T["status"]</th><th class="text-end">@T["amount"]</th><th>@T["transaction_ref"]</th></tr></thead>
+                        <tbody>
+                        @foreach (var p in d.Payments)
+                        {
+                            <tr>
+                                <td class="ltr small">@Fmt.DateTime(p.CreatedAt)</td>
+                                <td>@T[$"provider_{p.Provider}"]</td>
+                                <td><span class="badge @Fmt.PaymentBadge(p.Status)">@T[$"payment_{p.Status}"]</span> <small class="text-muted">@p.FailureReason</small></td>
+                                <td class="text-end">@Fmt.Money(p.Amount, T)</td>
+                                <td class="ltr small">@p.ProviderTransactionId</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-xl-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold">@T["change_status"]</div>
+            <div class="card-body">
+                @if (d.AllowedNextStatuses.Count == 0)
+                {
+                    <p class="text-muted mb-0">@T["order_final_state"]</p>
+                }
+                else
+                {
+                    <form method="post" asp-action="UpdateStatus" asp-route-id="@o.Id" novalidate data-testid="status-form">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" role="alert"></div>
+                        <div class="mb-2">
+                            <label asp-for="Form.Status" class="form-label">@T["new_status"]</label>
+                            <select asp-for="Form.Status" class="form-select">
+                                @foreach (var s in d.AllowedNextStatuses)
+                                {
+                                    <option value="@s">@T[$"status_{s}"]</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label asp-for="Form.TrackingNumber" class="form-label">@T["tracking_number"]</label>
+                            <input asp-for="Form.TrackingNumber" class="form-control" dir="ltr" />
+                            <span asp-validation-for="Form.TrackingNumber" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Form.Note" class="form-label">@T["note"]</label>
+                            <textarea asp-for="Form.Note" class="form-control" rows="2" placeholder="@T["status_note_hint"]"></textarea>
+                            <span asp-validation-for="Form.Note" class="text-danger small"></span>
+                        </div>
+                        <button type="submit" class="btn btn-honey w-100">@T["save"]</button>
+                        @if (d.AllowedNextStatuses.Contains(OrderStatus.Cancelled))
+                        {
+                            <div class="form-text">@T["cancel_restock_hint"]</div>
+                        }
+                    </form>
+                }
+                @if (canMarkPaid)
+                {
+                    <hr />
+                    <form method="post" asp-action="MarkPaid" asp-route-id="@o.Id" data-confirm="@T["confirm_mark_paid"]">
+                        <button class="btn btn-outline-success w-100">@T["mark_paid"]</button>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold">@T["customer"]</div>
+            <div class="card-body">
+                <div class="fw-semibold">@d.CustomerName</div>
+                <div class="ltr small">@d.CustomerEmail</div>
+                <div class="ltr small">@d.CustomerPhone</div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold">@T["shipping_address"]</div>
+            <div class="card-body small">
+                <div class="fw-semibold">@o.ShippingAddress.RecipientName</div>
+                <div class="ltr">@o.ShippingAddress.Phone</div>
+                <div>@o.ShippingAddress.Governorate – @o.ShippingAddress.City</div>
+                <div>@o.ShippingAddress.AddressLine</div>
+                @if (o.ShippingAddress.Landmark is not null) { <div class="text-muted">@o.ShippingAddress.Landmark</div> }
+                @if (o.TrackingNumber is not null) { <div class="mt-2">@T["tracking_number"]: <span class="ltr fw-semibold">@o.TrackingNumber</span></div> }
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body small">
+                <div>@T["date"]: <span class="ltr">@Fmt.DateTime(o.CreatedAt)</span></div>
+                <div>@T["payment_method"]: @T[$"method_{o.PaymentMethod}"]</div>
+                @if (!string.IsNullOrWhiteSpace(o.Notes)) { <div class="mt-2">@T["customer_notes"]: <em>@o.Notes</em></div> }
+            </div>
+        </div>
+    </div>
+</div>

@@ -128,7 +128,7 @@
 | 3.2 | Dashboard home: KPIs and charts | ✅ Done |
 | 3.3 | Categories, products, variants, images | ✅ Done |
 | 3.4 | Inventory | ✅ Done |
-| 3.5 | Orders and status changes | ⏳ |
+| 3.5 | Orders and status changes | ✅ Done |
 | 3.6 | Coupons, reviews, shipping fees | ⏳ |
 | 3.7 | Users and staff | ⏳ |
 
@@ -168,5 +168,13 @@ Infrastructure layers directly (same services, rules and database as the API; no
 - Rules come from the shared service: stock never below zero, restock must be positive, Sale/Return/Cancellation cannot be entered by hand. A clash with a sale at the same moment shows a "try again" message instead of an error page.
 - Small Application change: `IInventoryService.GetAsync(variantId)`.
 - Build: 0 errors, 0 warnings. Tests: 40 admin tests passed.
+
+### 2026-11-22 — Task 3.5
+- Orders list: filters for status, payment status, payment method, date range (Cairo days) and search (order number, customer name or phone); paging; CSV export of the filtered list (UTF-8 with BOM so Excel shows Arabic; values that look like formulas are neutralised; up to 5,000 rows).
+- Order page: items with SKU, subtotal, coupon discount, shipping and total; customer and shipping address; status history; payments; customer notes.
+- Status change: only the next statuses allowed by the order state machine are offered, with an optional note (shown to the customer in tracking) and tracking number. Cancelling returns stock and releases the coupon; marking a cash-on-delivery order Delivered records the payment; Returned puts stock back. All through the same `OrderService` as the API, and the staff member is recorded.
+- "Mark as paid" for orders whose payment is still pending.
+- Printable invoice / packing slip (shows "amount to collect" for unpaid cash-on-delivery orders).
+- Build: 0 errors, 0 warnings. Tests: 48 admin tests passed.
 
 ## Next: Phase 3 tasks 3.2 – 3.7

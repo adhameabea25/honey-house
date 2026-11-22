@@ -1,0 +1,90 @@
+@model OrderListViewModel
+@{
+    ViewData["Title"] = T["nav_orders"];
+    var f = Model.Filter;
+    var exportQuery = Context.Request.QueryString.Value;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 m-0">@T["nav_orders"]</h1>
+    <a href="/Orders/Export@(exportQuery)" class="btn btn-outline-dark">⬇ @T["export_csv"]</a>
+</div>
+<form method="get" class="card card-body shadow-sm mb-3">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label small" for="Search">@T["search"]</label>
+            <input id="Search" name="Search" value="@f.Search" class="form-control" placeholder="@T["order_search_hint"]" />
+        </div>
+        <div class="col-6 col-md-2">
+            <label class="form-label small" for="Status">@T["status"]</label>
+            <select id="Status" name="Status" class="form-select">
+                <option value="">@T["all"]</option>
+                @foreach (var s in Enum.GetValues<OrderStatus>())
+                {
+                    <option value="@s" selected="@(f.Status == s)">@T[$"status_{s}"]</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 col-md-2">
+            <label class="form-label small" for="PaymentStatus">@T["payment_status"]</label>
+            <select id="PaymentStatus" name="PaymentStatus" class="form-select">
+                <option value="">@T["all"]</option>
+                @foreach (var s in Enum.GetValues<PaymentStatus>())
+                {
+                    <option value="@s" selected="@(f.PaymentStatus == s)">@T[$"payment_{s}"]</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 col-md-2">
+            <label class="form-label small" for="PaymentMethod">@T["payment_method"]</label>
+            <select id="PaymentMethod" name="PaymentMethod" class="form-select">
+                <option value="">@T["all"]</option>
+                @foreach (var m in Enum.GetValues<PaymentMethod>())
+                {
+                    <option value="@m" selected="@(f.PaymentMethod == m)">@T[$"method_{m}"]</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 col-md-3 d-flex gap-1">
+            <div>
+                <label class="form-label small" for="From">@T["from"]</label>
+                <input id="From" name="From" type="date" value="@f.From?.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div>
+                <label class="form-label small" for="To">@T["to"]</label>
+                <input id="To" name="To" type="date" value="@f.To?.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+        </div>
+        <div class="col-12 d-flex gap-2">
+            <button class="btn btn-dark" type="submit">@T["filter"]</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">@T["reset"]</a>
+        </div>
+    </div>
+</form>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" data-testid="orders">
+            <thead>
+            <tr><th>@T["order_number"]</th><th>@T["date"]</th><th>@T["customer"]</th><th>@T["governorate"]</th><th>@T["status"]</th><th>@T["payment"]</th><th class="text-end">@T["total"]</th></tr>
+            </thead>
+            <tbody>
+            @foreach (var o in Model.Result.Items)
+            {
+                <tr>
+                    <td><a asp-action="Details" asp-route-id="@o.Id" class="fw-semibold ltr">@o.OrderNumber</a></td>
+                    <td class="ltr small text-nowrap">@Fmt.DateTime(o.CreatedAt)</td>
+                    <td>@o.CustomerName<div class="small text-muted ltr">@o.CustomerPhone</div></td>
+                    <td>@o.Governorate</td>
+                    <td><span class="badge @Fmt.StatusBadge(o.Status)">@T[$"status_{o.Status}"]</span></td>
+                    <td class="small">
+                        @T[$"method_{o.PaymentMethod}"]<br />
+                        <span class="badge @Fmt.PaymentBadge(o.PaymentStatus)">@T[$"payment_{o.PaymentStatus}"]</span>
+                    </td>
+                    <td class="text-end text-nowrap">@Fmt.Money(o.Total, T)<div class="small text-muted">@T["items_count", o.ItemCount]</div></td>
+                </tr>
+            }
+            @if (Model.Result.Items.Count == 0) { <tr><td colspan="7" class="text-center text-muted">@T["no_results"]</td></tr> }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" model="Pager.From(Model.Result)" />
+</div>
