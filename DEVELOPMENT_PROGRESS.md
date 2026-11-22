@@ -3,7 +3,7 @@
 | Phase | Status |
 |---|---|
 | 1. Architecture | ✅ Approved ([docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)) |
-| 2. Backend API | 🚧 In progress |
+| 2. Backend API | ✅ Complete (155 tests passing) |
 | 3. Admin Dashboard (MVC) | ⏳ Not started |
 | 4. Flutter App | ⏳ Not started |
 | 5. Deployment | ⏳ Not started |
@@ -22,7 +22,7 @@
 | 2.8 | Orders, checkout, inventory | ✅ Done | ✅ | ✅ 12 integration |
 | 2.9 | Payments: COD + Paymob | ✅ Done | ✅ | ✅ 8 unit + 7 integration |
 | 2.10 | Reviews and favorites | ✅ Done | ✅ | ✅ 3 unit + 5 integration |
-| 2.11 | Admin APIs and analytics | ⏳ | | |
+| 2.11 | Admin APIs and analytics | ✅ Done | ✅ | ✅ 6 integration |
 
 ## Log
 
@@ -100,3 +100,25 @@
 - Moderation (Admin/Manager): `GET /admin/reviews?status=pending|approved|all`, `PUT /admin/reviews/{id}/approve`, `DELETE /admin/reviews/{id}`. Product `AverageRating`/`ReviewCount` are recalculated from approved reviews on every change.
 - Favorites: `GET /favorites` (product cards, newest first, hides inactive/deleted products), `GET /favorites/ids`, `POST|DELETE /favorites/{productId}` (idempotent).
 - Build: 0 errors, 0 warnings. Tests: 68 unit + 81 integration passed.
+
+### 2026-11-22 — Task 2.11
+- Users (Admin): `GET /admin/users` (search, role filter), `GET /admin/users/{id}`, `POST /admin/users` (create staff, e.g. Manager), `PUT /admin/users/{id}/roles`, `PUT /admin/users/{id}/status` (disabling revokes all sessions). An admin cannot disable themselves or drop their own Admin role.
+- Analytics (Admin): `GET /admin/analytics/summary` (revenue, paid revenue, orders, average order value, items sold, cancellations, discounts given, new customers, pending orders, low-stock count), `/sales?groupBy=day|month` (continuous series in Cairo local time), `/top-products`, `/orders-by-status` (localized), `/sales-by-governorate`. Default range: last 30 days, max 2 years. Cancelled and returned orders are excluded from revenue.
+- Build: 0 errors, 0 warnings. Tests: 68 unit + 87 integration passed.
+
+## Phase 2 summary
+- 89 API operations on 68 routes, documented in Swagger (`/swagger`).
+- 155 automated tests (68 unit, 87 integration against a real SQL Server).
+- End-to-end smoke test on a fresh database: migrate + seed, register, Arabic search, cart, address, COD order (`HH-261122-…`, total in EGP) all succeeded with no server errors in the log.
+
+### Deviations from the architecture document
+- Localized messages live in a C# dictionary (`Application/Localization/Messages.cs`) instead of `.resx` files: simpler to review and unit-test. FluentValidation's built-in Arabic messages are used for generic rules.
+- Tests use **Shouldly** instead of FluentAssertions (FluentAssertions 8 needs a commercial licence) and DTO mapping is hand-written (no AutoMapper/Mapster dependency).
+- Added endpoints not in the original list: `GET /meta`, `GET /favorites/ids`, `GET /products/{id}/reviews/mine`, `POST /admin/users`, `GET /admin/analytics/sales-by-governorate`, `GET /admin/products` and `/admin/categories` listings.
+
+### Before production (Phase 5)
+- Provide secrets via environment/secret store: `ConnectionStrings__DefaultConnection`, `Jwt__SigningKey`, `Paymob__*` (then set `Paymob__Enabled=true`), and remove the development admin seed.
+- Replace `LoggingEmailSender` with a real email provider and `LocalFileStorage` with blob storage if running more than one server.
+- Run migrations as a deployment step (`Seed:ApplyMigrations=false` on the web servers).
+
+## Next: Phase 3 — Admin Dashboard (ASP.NET Core MVC)

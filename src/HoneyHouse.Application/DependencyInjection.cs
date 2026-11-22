@@ -1,5 +1,7 @@
 using FluentValidation;
 using HoneyHouse.Application.Features.Addresses;
+using HoneyHouse.Application.Features.Analytics;
+using HoneyHouse.Application.Features.Users;
 using HoneyHouse.Application.Features.Auth;
 using HoneyHouse.Application.Features.Cart;
 using HoneyHouse.Application.Features.Catalog;
@@ -34,6 +36,8 @@ public static class DependencyInjection
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IFavoriteService, FavoriteService>();
+        services.AddScoped<IUserAdminService, UserAdminService>();
+        services.AddScoped<IAnalyticsService, AnalyticsService>();
         services.AddScoped<IInventoryService, InventoryService>();
         return services;
     }

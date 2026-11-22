@@ -89,6 +89,10 @@ public static class Messages
         // Reviews
         ["review_exists"] = ("لقد قمت بتقييم هذا المنتج من قبل، يمكنك تعديل تقييمك", "You have already reviewed this product; edit your review instead."),
         ["review_not_found"] = ("التقييم غير موجود", "Review not found."),
+        // Users
+        ["cannot_modify_self"] = ("لا يمكنك إيقاف حسابك أو إزالة صلاحية المدير من نفسك", "You cannot disable your own account or remove your own Admin role."),
+        ["role_invalid"] = ("الدور غير صالح: {0}", "Invalid role: {0}"),
+        ["date_range_invalid"] = ("نطاق التاريخ غير صالح (الحد الأقصى سنتان)", "Invalid date range (maximum two years)."),
         ["identity_error"] = ("تعذر تنفيذ العملية: {0}", "The operation failed: {0}"),
     };
 
