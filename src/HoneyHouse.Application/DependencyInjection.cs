@@ -3,6 +3,7 @@ using HoneyHouse.Application.Features.Addresses;
 using HoneyHouse.Application.Features.Auth;
 using HoneyHouse.Application.Features.Cart;
 using HoneyHouse.Application.Features.Catalog;
+using HoneyHouse.Application.Features.Coupons;
 using HoneyHouse.Application.Interfaces.Services;
 using HoneyHouse.Application.Localization;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<IProductAdminService, ProductAdminService>();
         services.AddScoped<IAddressService, AddressService>();
         services.AddScoped<ICartService, CartService>();
+        services.AddScoped<ICouponService, CouponService>();
         return services;
     }
 }

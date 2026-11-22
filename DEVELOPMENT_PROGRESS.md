@@ -18,7 +18,7 @@
 | 2.4 | Authentication (JWT + refresh) and roles | ✅ Done | ✅ | ✅ 3 unit + 13 integration |
 | 2.5 | Catalog: categories, products, variants, images | ✅ Done | ✅ | ✅ 13 unit + 11 integration |
 | 2.6 | Addresses, governorates, cart | ✅ Done | ✅ | ✅ 2 unit + 9 integration |
-| 2.7 | Coupons | ⏳ | | |
+| 2.7 | Coupons | ✅ Done | ✅ | ✅ 8 unit + 10 integration |
 | 2.8 | Orders, checkout, inventory | ⏳ | | |
 | 2.9 | Payments: COD + Paymob | ⏳ | | |
 | 2.10 | Reviews and favorites | ⏳ | | |
@@ -71,3 +71,10 @@
 - Addresses (`/addresses`): list, get, create, update, delete, set default. Max 10 per user, first address becomes default, deleting the default promotes another, Egyptian phone validation, users are isolated from each other.
 - Cart (`/cart`): get, add item (merges quantities), update quantity, remove item, clear. Enforces stock and max 20 units per item; deactivated/deleted products stay visible but flagged `isAvailable=false` and are excluded from the subtotal.
 - Build: 0 errors, 0 warnings. Tests: 49 unit + 47 integration passed.
+
+### 2026-11-22 — Task 2.7
+- `CouponRules.Evaluate`: active flag, start/end window, global usage limit, per-user limit, minimum order; discount = percentage (rounded, capped by max discount) or fixed amount, never above the subtotal. Codes are case-insensitive (stored upper case).
+- `POST /coupons/validate`: previews the discount on the customer's current cart.
+- Admin (`/admin/coupons`, Admin only): search/paging, get, create, update, delete (blocked once used; deactivate instead).
+- Enums are now serialized as strings in API JSON (e.g. `"discountType": "Percentage"`).
+- Build: 0 errors, 0 warnings. Tests: 57 unit + 57 integration passed.

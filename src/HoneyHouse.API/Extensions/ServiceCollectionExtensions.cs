@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers(o => o.Filters.Add<ValidationFilter>())
+            .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()))
             .ConfigureApiBehaviorOptions(o => o.SuppressModelStateInvalidFilter = false);
         services.AddScoped<ValidationFilter>();
 

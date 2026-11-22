@@ -50,6 +50,17 @@ public static class Messages
         ["variant_unavailable"] = ("هذا المنتج غير متاح حاليًا", "This product is currently unavailable."),
         ["insufficient_stock"] = ("الكمية المطلوبة غير متوفرة، المتاح {0} فقط", "Requested quantity is not available. Only {0} left."),
         ["max_quantity_exceeded"] = ("الحد الأقصى {0} قطعة من كل منتج في الطلب الواحد", "Maximum {0} units of each item per order."),
+        // Coupons
+        ["coupon_invalid"] = ("كود الخصم غير صحيح", "Invalid coupon code."),
+        ["coupon_not_started"] = ("كود الخصم لم يبدأ بعد", "This coupon is not active yet."),
+        ["coupon_expired"] = ("انتهت صلاحية كود الخصم", "This coupon has expired."),
+        ["coupon_usage_limit"] = ("تم استخدام كود الخصم بالحد الأقصى", "This coupon has reached its usage limit."),
+        ["coupon_user_limit"] = ("لقد استخدمت كود الخصم هذا من قبل", "You have already used this coupon."),
+        ["coupon_min_order"] = ("الحد الأدنى للطلب لاستخدام هذا الكود {0} جنيه", "Minimum order for this coupon is EGP {0}."),
+        ["coupon_code_taken"] = ("كود الخصم موجود بالفعل", "This coupon code already exists."),
+        ["coupon_not_found"] = ("كود الخصم غير موجود", "Coupon not found."),
+        ["coupon_in_use"] = ("لا يمكن حذف كود خصم تم استخدامه، يمكنك إيقافه بدلًا من ذلك", "A used coupon cannot be deleted; deactivate it instead."),
+        ["cart_empty"] = ("السلة فارغة", "Your cart is empty."),
         ["identity_error"] = ("تعذر تنفيذ العملية: {0}", "The operation failed: {0}"),
     };
 

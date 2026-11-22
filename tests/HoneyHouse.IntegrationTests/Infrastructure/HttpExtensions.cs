@@ -5,7 +5,10 @@ namespace HoneyHouse.IntegrationTests.Infrastructure;
 
 public static class HttpExtensions
 {
-    public static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
+    public static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
+    };
 
     public static HttpClient WithLanguage(this HttpClient client, string lang)
     {
