@@ -11,6 +11,7 @@ public interface IProductService
     Task<IReadOnlyList<ProductListItemDto>> GetFeaturedAsync(int limit, CancellationToken ct = default);
     Task<Result<ProductDetailDto>> GetAsync(int id, CancellationToken ct = default);
     Task<Result<ProductDetailDto>> GetBySlugAsync(string slug, CancellationToken ct = default);
+    Task<IReadOnlyList<ProductListItemDto>> GetByIdsAsync(IReadOnlyList<int> ids, CancellationToken ct = default);
 }
 
 public sealed class ProductService(IProductRepository products, ICategoryRepository categories, ILanguageContext lang) : IProductService
@@ -33,6 +34,13 @@ public sealed class ProductService(IProductRepository products, ICategoryReposit
     {
         var (items, _) = await products.SearchAsync(new ProductSearchCriteria(
             null, null, null, null, false, FeaturedOnly: true, ProductSort.Newest, ActiveOnly: true, 0, Math.Clamp(limit, 1, 50)), ct);
+        return items.Select(ToListItem).ToList();
+    }
+
+    public async Task<IReadOnlyList<ProductListItemDto>> GetByIdsAsync(IReadOnlyList<int> ids, CancellationToken ct = default)
+    {
+        var (items, _) = await products.SearchAsync(new ProductSearchCriteria(
+            null, null, null, null, false, false, ProductSort.Newest, ActiveOnly: true, 0, Math.Max(ids.Count, 1), ids), ct);
         return items.Select(ToListItem).ToList();
     }
 

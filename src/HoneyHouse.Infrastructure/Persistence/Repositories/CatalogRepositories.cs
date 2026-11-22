@@ -40,6 +40,7 @@ public sealed class ProductRepository(AppDbContext db) : GenericRepository<Produ
                              || p.Variants.Any(v => v.Sku == term));
         }
         if (c.CategoryIds is { Count: > 0 } ids) q = q.Where(p => ids.Contains(p.CategoryId));
+        if (c.ProductIds is { } pids) q = q.Where(p => pids.Contains(p.Id));
         if (c.FeaturedOnly) q = q.Where(p => p.IsFeatured);
         if (c.InStockOnly) q = q.Where(p => p.Variants.Any(v => v.IsActive && v.StockQuantity > 0));
         if (c.MinPrice is { } min) q = q.Where(p => p.Variants.Any(v => v.IsActive && v.Price >= min));
@@ -95,4 +96,41 @@ public sealed class ProductRepository(AppDbContext db) : GenericRepository<Produ
         var q = Set.Include(p => p.Category).Include(p => p.Variants).Include(p => p.Images).AsQueryable();
         return activeOnly ? q.Where(p => p.IsActive && p.Category.IsActive) : q;
     }
+}
+
+public sealed class ReviewRepository(AppDbContext db) : GenericRepository<Review>(db), IReviewRepository
+{
+    public async Task<(IReadOnlyList<Review> Items, int Total)> SearchAsync(ReviewSearchCriteria c, CancellationToken ct = default)
+    {
+        var q = Set.AsNoTracking().AsQueryable();
+        if (c.ProductId is { } pid) q = q.Where(r => r.ProductId == pid);
+        if (c.Approved is { } approved) q = q.Where(r => r.IsApproved == approved);
+        var total = await q.CountAsync(ct);
+        var items = await q.Include(r => r.User).Include(r => r.Product)
+            .OrderByDescending(r => r.CreatedAt).ThenByDescending(r => r.Id).Skip(c.Skip).Take(c.Take).ToListAsync(ct);
+        return (items, total);
+    }
+
+    public async Task<ReviewSummary> GetSummaryAsync(int productId, CancellationToken ct = default)
+    {
+        var counts = await Set.Where(r => r.ProductId == productId && r.IsApproved)
+            .GroupBy(r => r.Rating).Select(g => new { Rating = g.Key, Count = g.Count() }).ToListAsync(ct);
+        var total = counts.Sum(x => x.Count);
+        var avg = total == 0 ? 0 : Math.Round((decimal)counts.Sum(x => x.Rating * x.Count) / total, 2);
+        var distribution = Enumerable.Range(1, 5).ToDictionary(i => i, i => counts.FirstOrDefault(x => x.Rating == i)?.Count ?? 0);
+        return new ReviewSummary(avg, total, distribution);
+    }
+
+    public async Task RecalculateProductRatingAsync(int productId, CancellationToken ct = default)
+    {
+        var summary = await GetSummaryAsync(productId, ct);
+        await Db.Products.IgnoreQueryFilters().Where(p => p.Id == productId)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.AverageRating, summary.Average).SetProperty(p => p.ReviewCount, summary.Count), ct);
+    }
+}
+
+public sealed class FavoriteRepository(AppDbContext db) : GenericRepository<Favorite>(db), IFavoriteRepository
+{
+    public async Task<IReadOnlyList<int>> GetProductIdsAsync(string userId, CancellationToken ct = default) =>
+        await Set.Where(f => f.UserId == userId).OrderByDescending(f => f.CreatedAt).Select(f => f.ProductId).ToListAsync(ct);
 }

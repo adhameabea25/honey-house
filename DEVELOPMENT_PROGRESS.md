@@ -21,7 +21,7 @@
 | 2.7 | Coupons | ✅ Done | ✅ | ✅ 8 unit + 10 integration |
 | 2.8 | Orders, checkout, inventory | ✅ Done | ✅ | ✅ 12 integration |
 | 2.9 | Payments: COD + Paymob | ✅ Done | ✅ | ✅ 8 unit + 7 integration |
-| 2.10 | Reviews and favorites | ⏳ | | |
+| 2.10 | Reviews and favorites | ✅ Done | ✅ | ✅ 3 unit + 5 integration |
 | 2.11 | Admin APIs and analytics | ⏳ | | |
 
 ## Log
@@ -94,3 +94,9 @@
 - Background job `UnpaidOrderExpiryService` (every 60 s): cancels online orders unpaid after 30 minutes and returns their stock.
 - Paymob is configured under `Paymob` in settings (disabled until keys are provided; then online checkout is offered).
 - Build: 0 errors, 0 warnings. Tests: 65 unit + 76 integration passed (HMAC verified against an independently computed vector).
+
+### 2026-11-22 — Task 2.10
+- Reviews: `GET /products/{id}/reviews` (approved reviews + summary: average, count, 1–5 distribution; reviewer shown by first name only), `GET /products/{id}/reviews/mine`, `POST /products/{id}/reviews` (one per customer, 1–5 stars, "verified purchase" when the customer has a delivered order with the product), `PUT|DELETE /reviews/{id}` (owner only; edits go back to moderation).
+- Moderation (Admin/Manager): `GET /admin/reviews?status=pending|approved|all`, `PUT /admin/reviews/{id}/approve`, `DELETE /admin/reviews/{id}`. Product `AverageRating`/`ReviewCount` are recalculated from approved reviews on every change.
+- Favorites: `GET /favorites` (product cards, newest first, hides inactive/deleted products), `GET /favorites/ids`, `POST|DELETE /favorites/{productId}` (idempotent).
+- Build: 0 errors, 0 warnings. Tests: 68 unit + 81 integration passed.

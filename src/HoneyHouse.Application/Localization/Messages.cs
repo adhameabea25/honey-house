@@ -86,6 +86,9 @@ public static class Messages
         ["online_payment_unavailable"] = ("الدفع الإلكتروني غير متاح حاليًا، اختر الدفع عند الاستلام", "Online payment is currently unavailable. Please choose cash on delivery."),
         ["payment_gateway_error"] = ("تعذر بدء عملية الدفع، حاول مرة أخرى", "Could not start the payment. Please try again."),
         ["payment_not_retryable"] = ("لا يمكن إعادة محاولة الدفع لهذا الطلب", "Payment cannot be retried for this order."),
+        // Reviews
+        ["review_exists"] = ("لقد قمت بتقييم هذا المنتج من قبل، يمكنك تعديل تقييمك", "You have already reviewed this product; edit your review instead."),
+        ["review_not_found"] = ("التقييم غير موجود", "Review not found."),
         ["identity_error"] = ("تعذر تنفيذ العملية: {0}", "The operation failed: {0}"),
     };
 

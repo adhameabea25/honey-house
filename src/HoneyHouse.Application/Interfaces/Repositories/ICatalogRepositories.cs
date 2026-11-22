@@ -23,7 +23,8 @@ public sealed record ProductSearchCriteria(
     ProductSort Sort,
     bool ActiveOnly,
     int Skip,
-    int Take);
+    int Take,
+    IReadOnlyList<int>? ProductIds = null);
 
 /// <summary>Flat bilingual projection used for product listings.</summary>
 public sealed record ProductSummary(
@@ -54,4 +55,22 @@ public interface IProductRepository : IGenericRepository<Product>
     Task<bool> SlugExistsAsync(string slug, int? excludeId, CancellationToken ct = default);
     Task<bool> SkuExistsAsync(string sku, int? excludeVariantId, CancellationToken ct = default);
     Task<ProductVariant?> GetVariantAsync(int variantId, CancellationToken ct = default);
+}
+
+public sealed record ReviewSummary(decimal Average, int Count, IReadOnlyDictionary<int, int> Distribution);
+
+public sealed record ReviewSearchCriteria(int? ProductId, bool? Approved, int Skip, int Take);
+
+public interface IReviewRepository : IGenericRepository<Review>
+{
+    /// <summary>Reviews with user and product loaded, newest first.</summary>
+    Task<(IReadOnlyList<Review> Items, int Total)> SearchAsync(ReviewSearchCriteria criteria, CancellationToken ct = default);
+    Task<ReviewSummary> GetSummaryAsync(int productId, CancellationToken ct = default);
+    /// <summary>Recomputes Product.AverageRating and ReviewCount from approved reviews (saves immediately).</summary>
+    Task RecalculateProductRatingAsync(int productId, CancellationToken ct = default);
+}
+
+public interface IFavoriteRepository : IGenericRepository<Favorite>
+{
+    Task<IReadOnlyList<int>> GetProductIdsAsync(string userId, CancellationToken ct = default);
 }

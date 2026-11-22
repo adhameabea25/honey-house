@@ -7,6 +7,7 @@ using HoneyHouse.Application.Features.Coupons;
 using HoneyHouse.Application.Features.Inventory;
 using HoneyHouse.Application.Features.Orders;
 using HoneyHouse.Application.Features.Payments;
+using HoneyHouse.Application.Features.Reviews;
 using HoneyHouse.Application.Interfaces.Services;
 using HoneyHouse.Application.Localization;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,8 @@ public static class DependencyInjection
         services.AddScoped<IOrderPaymentHandler, CashOnDeliveryPaymentHandler>();
         services.AddScoped<IOrderPaymentHandler, OnlinePaymentHandler>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<IFavoriteService, FavoriteService>();
         services.AddScoped<IInventoryService, InventoryService>();
         return services;
     }

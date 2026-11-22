@@ -30,3 +30,13 @@ public class CartRulesTests
         CartService.CheckQuantity(Variant(stock: 100), 21).FirstError!.Code.ShouldBe("max_quantity_exceeded");
     }
 }
+
+public class ReviewRulesTests
+{
+    [Theory]
+    [InlineData("أحمد محمد علي", "أحمد")]
+    [InlineData("Sara", "Sara")]
+    [InlineData("  Omar   Khaled ", "Omar")]
+    public void Public_name_is_first_name_only(string full, string expected) =>
+        HoneyHouse.Application.Features.Reviews.ReviewService.PublicName(new ApplicationUser { FullName = full }).ShouldBe(expected);
+}
