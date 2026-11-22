@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HoneyHouse.API/HoneyHouse.API.csproj" />
+    <Project Path="src/HoneyHouse.Application/HoneyHouse.Application.csproj" />
+    <Project Path="src/HoneyHouse.Domain/HoneyHouse.Domain.csproj" />
+    <Project Path="src/HoneyHouse.Infrastructure/HoneyHouse.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HoneyHouse.IntegrationTests/HoneyHouse.IntegrationTests.csproj" />
+    <Project Path="tests/HoneyHouse.UnitTests/HoneyHouse.UnitTests.csproj" />
+  </Folder>
+</Solution>
