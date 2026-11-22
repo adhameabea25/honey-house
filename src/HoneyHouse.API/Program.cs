@@ -14,7 +14,8 @@ builder.Host.UseSerilog((ctx, cfg) => cfg
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
-    .AddApiServices(builder.Configuration);
+    .AddApiServices(builder.Configuration)
+    .AddJwtAuthentication();
 
 var app = builder.Build();
 
@@ -36,6 +37,8 @@ if (!app.Environment.IsProduction())
 
 app.UseCors();
 app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapHealthChecks("/health");
 app.MapControllers();

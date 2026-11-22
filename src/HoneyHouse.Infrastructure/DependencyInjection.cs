@@ -1,4 +1,7 @@
 using HoneyHouse.Application.Interfaces.Repositories;
+using HoneyHouse.Application.Interfaces.Services;
+using HoneyHouse.Infrastructure.Email;
+using HoneyHouse.Infrastructure.Identity;
 using HoneyHouse.Domain.Entities;
 using HoneyHouse.Infrastructure.Persistence;
 using HoneyHouse.Infrastructure.Persistence.Repositories;
@@ -45,6 +48,10 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Section));
+        services.AddSingleton<ITokenService, JwtTokenService>();
+        services.AddSingleton<IEmailSender, LoggingEmailSender>();
 
         services.Configure<SeedOptions>(configuration.GetSection(SeedOptions.Section));
         services.AddScoped<DatabaseSeeder>();

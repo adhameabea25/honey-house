@@ -15,7 +15,7 @@
 | 2.1 | Solution, projects, Domain entities | ✅ Done | ✅ | ✅ 17 unit |
 | 2.2 | DbContext, configurations, migration, seed | ✅ Done | ✅ | ✅ 2 unit + 7 integration |
 | 2.3 | Error handling, validation, localization, Swagger, logging | ✅ Done | ✅ | ✅ 12 unit + 7 integration |
-| 2.4 | Authentication (JWT + refresh) and roles | ⏳ | | |
+| 2.4 | Authentication (JWT + refresh) and roles | ✅ Done | ✅ | ✅ 3 unit + 13 integration |
 | 2.5 | Catalog: categories, products, variants, images | ⏳ | | |
 | 2.6 | Addresses, governorates, cart | ⏳ | | |
 | 2.7 | Coupons | ⏳ | | |
@@ -50,3 +50,11 @@
 - `GET /api/v1/meta`: store name in the requested language, currency EGP, supported languages.
 - Shared validation rules: Egyptian mobile numbers, password strength, supported language.
 - Build: 0 errors, 0 warnings. Tests: 31 unit + 14 integration passed.
+
+### 2026-11-22 — Task 2.4
+- ASP.NET Core Identity (users + roles) with JWT bearer access tokens (15 min, HMAC-SHA256) and refresh tokens (7 days, stored as SHA-256 hashes, rotated on every use, reuse detection revokes all sessions).
+- Endpoints: `POST /auth/register`, `/login`, `/refresh`, `/logout`, `/forgot-password`, `/reset-password`, `/change-password`; `GET|PUT /auth/me`.
+- Lockout after 5 failed logins (15 min), disabled accounts blocked, password change/reset signs out other sessions, forgot-password never reveals whether an email exists.
+- Rate limiting on auth endpoints (10/min per IP, configurable). Localized 401/403 problem responses.
+- `IEmailSender` abstraction (development implementation logs emails).
+- Build: 0 errors, 0 warnings. Tests: 34 unit + 27 integration passed.

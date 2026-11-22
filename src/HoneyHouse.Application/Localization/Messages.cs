@@ -21,6 +21,17 @@ public static class Messages
         ["phone_invalid"] = ("رقم الهاتف غير صحيح، يجب أن يكون رقمًا مصريًا مثل 01012345678", "Invalid phone number. Use an Egyptian mobile number like 01012345678."),
         ["password_weak"] = ("كلمة المرور يجب ألا تقل عن 8 أحرف وتحتوي على حرف صغير ورقم", "Password must be at least 8 characters and contain a lowercase letter and a digit."),
         ["language_invalid"] = ("اللغة يجب أن تكون ar أو en", "Language must be 'ar' or 'en'."),
+
+        // Auth
+        ["email_taken"] = ("البريد الإلكتروني مستخدم بالفعل", "This email is already registered."),
+        ["invalid_credentials"] = ("البريد الإلكتروني أو كلمة المرور غير صحيحة", "Invalid email or password."),
+        ["account_locked"] = ("تم إيقاف الحساب مؤقتًا بسبب محاولات دخول خاطئة كثيرة، حاول بعد 15 دقيقة", "Account temporarily locked after too many failed attempts. Try again in 15 minutes."),
+        ["account_disabled"] = ("هذا الحساب موقوف، تواصل مع خدمة العملاء", "This account is disabled. Please contact support."),
+        ["invalid_refresh_token"] = ("انتهت الجلسة، سجّل الدخول مرة أخرى", "Your session has expired. Please sign in again."),
+        ["invalid_reset_token"] = ("رابط إعادة تعيين كلمة المرور غير صالح أو منتهي", "The password reset link is invalid or has expired."),
+        ["password_incorrect"] = ("كلمة المرور الحالية غير صحيحة", "The current password is incorrect."),
+        ["user_not_found"] = ("المستخدم غير موجود", "User not found."),
+        ["identity_error"] = ("تعذر تنفيذ العملية: {0}", "The operation failed: {0}"),
     };
 
     public static bool Exists(string code) => All.ContainsKey(code);

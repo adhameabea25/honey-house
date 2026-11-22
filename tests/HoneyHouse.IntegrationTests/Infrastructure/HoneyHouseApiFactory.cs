@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using HoneyHouse.Application.Interfaces.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HoneyHouse.IntegrationTests.Infrastructure;
 
@@ -15,6 +17,8 @@ public class HoneyHouseApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
 {
     public const string AdminEmail = "admin@test.local";
     public const string AdminPassword = "Admin12345";
+
+    public CapturingEmailSender Emails { get; } = new();
 
     private readonly string _databaseName = $"HoneyHouse_Test_{Guid.NewGuid():N}";
 
@@ -39,8 +43,16 @@ public class HoneyHouseApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
                 ["Seed:ApplyMigrations"] = "true",
                 ["Seed:SampleData"] = "true",
                 ["Seed:AdminEmail"] = AdminEmail,
-                ["Seed:AdminPassword"] = AdminPassword
+                ["Seed:AdminPassword"] = AdminPassword,
+                ["Jwt:SigningKey"] = "integration-tests-signing-key-0123456789abcdef",
+                ["RateLimiting:AuthPermitPerMinute"] = "10000"
             });
+        });
+        builder.ConfigureServices(services =>
+        {
+            services.RemoveAll<IEmailSender>();
+            services.AddSingleton(Emails);
+            services.AddSingleton<IEmailSender>(Emails);
         });
     }
 
@@ -67,4 +79,20 @@ public class HoneyHouseApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
 public class ApiCollection : ICollectionFixture<HoneyHouseApiFactory>
 {
     public const string Name = "api";
+}
+
+public sealed class CapturingEmailSender : IEmailSender
+{
+    private readonly List<(string To, string Subject, string Body)> _sent = [];
+
+    public IReadOnlyList<(string To, string Subject, string Body)> Sent
+    {
+        get { lock (_sent) return _sent.ToList(); }
+    }
+
+    public Task SendAsync(string to, string subject, string htmlBody, CancellationToken ct = default)
+    {
+        lock (_sent) _sent.Add((to, subject, htmlBody));
+        return Task.CompletedTask;
+    }
 }
