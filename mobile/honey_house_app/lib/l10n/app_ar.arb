@@ -1,0 +1,240 @@
+{
+  "@@locale": "ar",
+  "appTitle": "بيت العسل",
+  "navHome": "الرئيسية",
+  "navShop": "المتجر",
+  "navCart": "السلة",
+  "navFavorites": "المفضلة",
+  "navAccount": "حسابي",
+  "currency": "ج.م",
+  "retry": "إعادة المحاولة",
+  "errorGeneric": "حدث خطأ غير متوقع، حاول مرة أخرى",
+  "errorNetwork": "تعذر الاتصال بالخادم، تحقق من الإنترنت",
+  "sessionExpired": "انتهت الجلسة، سجّل الدخول مرة أخرى",
+  "save": "حفظ",
+  "cancel": "إلغاء",
+  "delete": "حذف",
+  "edit": "تعديل",
+  "confirm": "تأكيد",
+  "close": "إغلاق",
+  "seeAll": "عرض الكل",
+  "required": "هذا الحقل مطلوب",
+  "loadMore": "تحميل المزيد",
+  "noResults": "لا توجد نتائج",
+  "language": "اللغة",
+  "arabic": "العربية",
+  "english": "English",
+  "login": "تسجيل الدخول",
+  "logout": "تسجيل الخروج",
+  "register": "إنشاء حساب",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "fullName": "الاسم بالكامل",
+  "phone": "رقم الموبايل",
+  "phoneHint": "01012345678",
+  "emailInvalid": "البريد الإلكتروني غير صحيح",
+  "phoneInvalid": "رقم موبايل مصري غير صحيح",
+  "passwordRule": "8 أحرف على الأقل وتحتوي على حرف صغير ورقم",
+  "noAccount": "ليس لديك حساب؟",
+  "haveAccount": "لديك حساب بالفعل؟",
+  "forgotPassword": "نسيت كلمة المرور؟",
+  "forgotPasswordTitle": "استعادة كلمة المرور",
+  "forgotPasswordHint": "أدخل بريدك وسنرسل لك رمز إعادة التعيين",
+  "sendCode": "إرسال الرمز",
+  "resetCode": "رمز إعادة التعيين",
+  "newPassword": "كلمة المرور الجديدة",
+  "currentPassword": "كلمة المرور الحالية",
+  "resetPasswordButton": "تغيير كلمة المرور",
+  "resetCodeSent": "لو البريد مسجل هيوصلك رمز خلال دقائق",
+  "passwordChanged": "تم تغيير كلمة المرور",
+  "loginToContinue": "سجّل الدخول للمتابعة",
+  "welcomeBack": "أهلًا بعودتك",
+  "welcomeUser": "أهلًا {name}",
+  "@welcomeUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "guest": "زائر",
+  "myProfile": "بياناتي",
+  "profileSaved": "تم حفظ بياناتك",
+  "changePassword": "تغيير كلمة المرور",
+  "myAddresses": "عناويني",
+  "myOrders": "طلباتي",
+  "confirmLogout": "هل تريد تسجيل الخروج؟",
+  "searchHint": "ابحث عن عسل، شمع، غذاء ملكات...",
+  "categories": "التصنيفات",
+  "featured": "منتجات مميزة",
+  "allProducts": "كل المنتجات",
+  "fromPrice": "من {price}",
+  "@fromPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "outOfStock": "نفدت الكمية",
+  "inStockOnly": "المتوفر فقط",
+  "sortBy": "الترتيب",
+  "sortNewest": "الأحدث",
+  "sortPriceAsc": "السعر: من الأقل",
+  "sortPriceDesc": "السعر: من الأعلى",
+  "sortRating": "الأعلى تقييمًا",
+  "sortBestselling": "الأكثر مبيعًا",
+  "filters": "تصفية",
+  "minPrice": "أقل سعر",
+  "maxPrice": "أعلى سعر",
+  "apply": "تطبيق",
+  "clear": "مسح",
+  "chooseWeight": "اختر الوزن",
+  "quantity": "الكمية",
+  "addToCart": "أضف إلى السلة",
+  "addedToCart": "تمت الإضافة إلى السلة",
+  "viewCart": "عرض السلة",
+  "description": "الوصف",
+  "origin": "المصدر: {origin}",
+  "@origin": {
+    "placeholders": {
+      "origin": {
+        "type": "String"
+      }
+    }
+  },
+  "onlyLeft": "متبقي {count} فقط",
+  "@onlyLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviews": "التقييمات",
+  "reviewsCount": "({count} تقييم)",
+  "@reviewsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noReviews": "لا توجد تقييمات بعد",
+  "verifiedPurchase": "مشتري مؤكد",
+  "writeReview": "اكتب تقييمك",
+  "editReview": "عدّل تقييمك",
+  "yourRating": "تقييمك",
+  "yourComment": "تعليقك (اختياري)",
+  "reviewPending": "تقييمك قيد المراجعة وسيظهر بعد الموافقة",
+  "reviewSubmitted": "شكرًا! تم إرسال تقييمك للمراجعة",
+  "chooseRating": "اختر عدد النجوم",
+  "subcategories": "الأقسام",
+  "cartEmpty": "سلتك فاضية",
+  "startShopping": "ابدأ التسوق",
+  "subtotal": "المجموع الفرعي",
+  "checkout": "إتمام الطلب",
+  "itemUnavailable": "غير متاح بالكمية المطلوبة (المتاح {count})",
+  "@itemUnavailable": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cartHasUnavailable": "بعض المنتجات غير متاحة، عدّل الكمية أو احذفها",
+  "removeItem": "حذف من السلة",
+  "itemsCount": "{count} منتج",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "favoritesEmpty": "لا توجد منتجات في المفضلة",
+  "addedToFavorites": "أضيف للمفضلة",
+  "removedFromFavorites": "أزيل من المفضلة",
+  "addAddress": "إضافة عنوان",
+  "editAddress": "تعديل العنوان",
+  "noAddresses": "لا توجد عناوين محفوظة",
+  "recipientName": "اسم المستلم",
+  "governorate": "المحافظة",
+  "city": "المدينة / المركز",
+  "area": "المنطقة / الحي",
+  "street": "الشارع",
+  "building": "العمارة",
+  "floor": "الدور",
+  "apartment": "الشقة",
+  "landmark": "علامة مميزة",
+  "setDefault": "اجعله العنوان الافتراضي",
+  "defaultAddress": "الافتراضي",
+  "shippingFeeValue": "الشحن: {fee}",
+  "@shippingFeeValue": {
+    "placeholders": {
+      "fee": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteAddress": "حذف هذا العنوان؟",
+  "deliveryAddress": "عنوان التوصيل",
+  "change": "تغيير",
+  "paymentMethod": "طريقة الدفع",
+  "cashOnDelivery": "الدفع عند الاستلام",
+  "onlinePayment": "الدفع بالبطاقة / المحفظة",
+  "couponCode": "كود الخصم",
+  "applyCoupon": "تطبيق",
+  "removeCoupon": "إزالة الكود",
+  "discount": "الخصم",
+  "shipping": "الشحن",
+  "total": "الإجمالي",
+  "orderNotes": "ملاحظات للطلب (اختياري)",
+  "placeOrder": "تأكيد الطلب",
+  "orderPlaced": "تم استلام طلبك 🎉",
+  "orderPlacedText": "رقم طلبك {number}. هنتواصل معاك لتأكيد الطلب.",
+  "@orderPlacedText": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "trackOrder": "تتبع الطلب",
+  "continueShopping": "متابعة التسوق",
+  "orderSummary": "ملخص الطلب",
+  "payNow": "ادفع الآن",
+  "paymentTitle": "الدفع الإلكتروني",
+  "paymentDone": "انتهيت من الدفع",
+  "paymentPendingNote": "ادفع خلال 30 دقيقة وإلا سيتم إلغاء الطلب تلقائيًا",
+  "paymentSuccess": "تم الدفع بنجاح",
+  "paymentFailed": "لم تكتمل عملية الدفع",
+  "addAddressFirst": "أضف عنوان توصيل أولًا",
+  "noOrders": "لا توجد طلبات بعد",
+  "orderNumber": "طلب {number}",
+  "@orderNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "orderDate": "تاريخ الطلب",
+  "orderItems": "المنتجات",
+  "orderStatus": "حالة الطلب",
+  "trackingNumber": "رقم الشحنة: {number}",
+  "@trackingNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelOrder": "إلغاء الطلب",
+  "cancelReason": "سبب الإلغاء (اختياري)",
+  "orderCancelled": "تم إلغاء الطلب",
+  "rateProduct": "قيّم المنتج",
+  "shipTo": "التوصيل إلى",
+  "payment": "الدفع",
+  "all": "الكل"
+}
