@@ -1,6 +1,6 @@
 # Honey House — وثيقة المعمارية (Backend)
 
-> الإصدار 1.0 · 2026-11-22 · الحالة: **بانتظار الموافقة** — لن يبدأ أي كود قبل موافقتك.
+> الإصدار 1.1 · 2026-11-22 · الحالة: **معتمدة ومنفّذة في المرحلة 2**. الاختلافات عن الخطة الأصلية موثّقة في [DEVELOPMENT_PROGRESS.md](../DEVELOPMENT_PROGRESS.md#deviations-from-the-architecture-document).
 
 ---
 

@@ -1,9 +1,58 @@
+using HoneyHouse.API.Extensions;
+using HoneyHouse.Application;
+using HoneyHouse.Infrastructure;
+using HoneyHouse.Infrastructure.Persistence.Seed;
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Host.UseSerilog((ctx, cfg) => cfg
+    .ReadFrom.Configuration(ctx.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console());
+
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration)
+    .AddApiServices(builder.Configuration)
+    .AddJwtAuthentication();
+
+if (builder.Configuration.GetValue("Jobs:Enabled", true))
+    builder.Services.AddHostedService<HoneyHouse.API.BackgroundJobs.UnpaidOrderExpiryService>();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    await scope.ServiceProvider.GetRequiredService<DatabaseSeeder>().SeedAsync();
+}
+
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+app.UseSerilogRequestLogging();
+app.UseRequestLocalization();
+
+if (!app.Environment.IsProduction())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(o => o.DocumentTitle = "Honey House API");
+}
+
+var storage = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<HoneyHouse.Infrastructure.Storage.FileStorageOptions>>().Value;
+var uploadsRoot = Path.GetFullPath(storage.RootPath);
+Directory.CreateDirectory(uploadsRoot);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsRoot),
+    RequestPath = storage.RequestPath
+});
+
+app.UseCors();
+app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();
