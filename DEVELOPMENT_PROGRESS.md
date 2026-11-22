@@ -127,7 +127,7 @@
 | 3.1 | MVC project, staff sign-in, Arabic/English (RTL/LTR) layout | ✅ Done |
 | 3.2 | Dashboard home: KPIs and charts | ✅ Done |
 | 3.3 | Categories, products, variants, images | ✅ Done |
-| 3.4 | Inventory | ⏳ |
+| 3.4 | Inventory | ✅ Done |
 | 3.5 | Orders and status changes | ⏳ |
 | 3.6 | Coupons, reviews, shipping fees | ⏳ |
 | 3.7 | Users and staff | ⏳ |
@@ -161,5 +161,12 @@ Infrastructure layers directly (same services, rules and database as the API; no
 - Small Application change: `ProductSearchCriteria.IsActive` filter so the dashboard can list hidden products only.
 - Note: the sample catalogue seeds placeholder image paths (`/images/products/...`) that have no files yet; real photos can now be uploaded from the dashboard.
 - Build: 0 errors, 0 warnings. Tests: 33 admin tests passed; API catalog tests still pass.
+
+### 2026-11-22 — Task 3.4
+- Inventory list: every weight option with stock, alert threshold and state (in stock / low / out / inactive); search by product name or SKU, low-stock filter, paging. The dashboard and product pages link here.
+- Per-option page: current stock, adjust form (Restock adds, Adjustment adds or removes with a note) and full history with date (Cairo time), type, change, balance, staff member, note, and a link to the order for sales and cancellations.
+- Rules come from the shared service: stock never below zero, restock must be positive, Sale/Return/Cancellation cannot be entered by hand. A clash with a sale at the same moment shows a "try again" message instead of an error page.
+- Small Application change: `IInventoryService.GetAsync(variantId)`.
+- Build: 0 errors, 0 warnings. Tests: 40 admin tests passed.
 
 ## Next: Phase 3 tasks 3.2 – 3.7
