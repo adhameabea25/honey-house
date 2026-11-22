@@ -159,7 +159,7 @@
                     @foreach (var o in Model.RecentOrders)
                     {
                         <tr>
-                            <td><a asp-controller="Orders" asp-action="Details" asp-route-id="@o.Id" class="ltr">@o.OrderNumber</a></td>
+                            <td class="text-nowrap"><a asp-controller="Orders" asp-action="Details" asp-route-id="@o.Id" class="ltr">@o.OrderNumber</a></td>
                             <td>@o.CustomerName</td>
                             <td><span class="badge @Fmt.StatusBadge(o.Status)">@T[$"status_{o.Status}"]</span></td>
                             <td class="text-end">@Fmt.Money(o.Total, T)</td>

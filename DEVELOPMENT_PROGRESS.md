@@ -130,7 +130,7 @@
 | 3.4 | Inventory | ✅ Done |
 | 3.5 | Orders and status changes | ✅ Done |
 | 3.6 | Coupons, reviews, shipping fees | ✅ Done |
-| 3.7 | Users and staff | ⏳ |
+| 3.7 | Users and staff | ✅ Done |
 
 The dashboard (`src/HoneyHouse.Admin`) is a separate ASP.NET Core MVC app that reuses the Application and
 Infrastructure layers directly (same services, rules and database as the API; no HTTP calls to the API).
@@ -184,4 +184,16 @@ Infrastructure layers directly (same services, rules and database as the API; no
 - Coupons and shipping are Admin-only (same as the API); Managers do not see them in the menu and get the access-denied page if they open the URL.
 - Build: 0 errors, 0 warnings. Tests: 57 admin tests passed.
 
-## Next: Phase 3 tasks 3.2 – 3.7
+### 2026-11-22 — Task 3.7
+- Users (Admin): list with search (name, email, phone) and role filter; status and "locked" badges.
+- User page: details, link to the customer's orders, roles (Admin / Manager / Customer) and enable/disable. An admin cannot disable or demote themselves. Disabling signs the user out of the app (refresh tokens revoked) and the dashboard (cookie re-check) at once; promoting a manager refreshes their menu on the next click.
+- Add staff member: name, email, Egyptian mobile, initial password (same strength rule as the app), roles.
+- Build: 0 errors, 0 warnings. Tests: 65 admin tests passed.
+
+## Phase 3 summary
+- Admin dashboard with 13 controllers covering every admin feature of the API; Arabic RTL by default and English LTR; works on phones (sidebar collapses; checked every page for horizontal overflow at iPhone width).
+- 220 automated tests pass: 68 unit, 87 API integration, 65 dashboard (real app, real SQL Server, real form posts with antiforgery tokens).
+- Small Application additions only (no API behaviour change): product active/inactive filter, `IInventoryService.GetAsync`.
+- Known limits: the admin user list loads users in memory before paging (fine for thousands, revisit for very large customer bases); sales-by-governorate shows the governorate name stored on the order (Arabic); sample products have placeholder image paths until real photos are uploaded.
+
+## Next: Phase 4 — Flutter mobile app

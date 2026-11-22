@@ -1,0 +1,53 @@
+@model UserListViewModel
+@{ ViewData["Title"] = T["nav_users"]; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 m-0">@T["nav_users"]</h1>
+    <a asp-action="Create" class="btn btn-honey">+ @T["staff_add"]</a>
+</div>
+<form method="get" class="card card-body shadow-sm mb-3">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label small" for="search">@T["search"]</label>
+            <input id="search" name="search" value="@Model.Search" class="form-control" placeholder="@T["user_search_hint"]" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small" for="role">@T["role"]</label>
+            <select id="role" name="role" class="form-select">
+                <option value="">@T["all"]</option>
+                @foreach (var r in Roles.All)
+                {
+                    <option value="@r" selected="@(Model.Role == r)">@T[$"role_{r}"]</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button class="btn btn-dark" type="submit">@T["filter"]</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">@T["reset"]</a>
+        </div>
+    </div>
+</form>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" data-testid="users">
+            <thead><tr><th>@T["full_name"]</th><th>@T["email"]</th><th>@T["phone"]</th><th>@T["role"]</th><th>@T["status"]</th><th>@T["joined"]</th></tr></thead>
+            <tbody>
+            @foreach (var u in Model.Result.Items)
+            {
+                <tr>
+                    <td><a asp-action="Details" asp-route-id="@u.Id" class="fw-semibold text-decoration-none">@u.FullName</a></td>
+                    <td class="ltr small">@u.Email</td>
+                    <td class="ltr small">@u.PhoneNumber</td>
+                    <td>@foreach (var r in u.Roles) { <span class="badge @(r == Roles.Customer ? "bg-light text-dark" : "bg-warning text-dark") me-1">@T[$"role_{r}"]</span> }</td>
+                    <td>
+                        <span class="badge @(u.IsActive ? "bg-success" : "bg-secondary")">@T[u.IsActive ? "active" : "user_disabled_badge"]</span>
+                        @if (u.IsLockedOut) { <span class="badge bg-danger">@T["locked"]</span> }
+                    </td>
+                    <td class="ltr small">@Fmt.Date(u.CreatedAt)</td>
+                </tr>
+            }
+            @if (Model.Result.Items.Count == 0) { <tr><td colspan="6" class="text-center text-muted">@T["no_results"]</td></tr> }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" model="Pager.From(Model.Result)" />
+</div>

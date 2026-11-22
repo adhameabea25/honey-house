@@ -25,3 +25,4 @@ html[dir="rtl"] body { font-family: "Segoe UI", Tahoma, "Noto Sans Arabic", Aria
 .thumb { width: 48px; height: 48px; object-fit: cover; border-radius: .375rem; background: #eee; }
 .ltr { direction: ltr; unicode-bidi: embed; }
 html[dir="rtl"] div.ltr { text-align: right; }
+input[type="date"], input[type="datetime-local"] { min-width: 0; }

@@ -44,15 +44,13 @@
                 }
             </select>
         </div>
-        <div class="col-6 col-md-3 d-flex gap-1">
-            <div>
-                <label class="form-label small" for="From">@T["from"]</label>
-                <input id="From" name="From" type="date" value="@f.From?.ToString("yyyy-MM-dd")" class="form-control" />
-            </div>
-            <div>
-                <label class="form-label small" for="To">@T["to"]</label>
-                <input id="To" name="To" type="date" value="@f.To?.ToString("yyyy-MM-dd")" class="form-control" />
-            </div>
+        <div class="col-6 col-md-auto">
+            <label class="form-label small" for="From">@T["from"]</label>
+            <input id="From" name="From" type="date" value="@f.From?.ToString("yyyy-MM-dd")" class="form-control" />
+        </div>
+        <div class="col-6 col-md-auto">
+            <label class="form-label small" for="To">@T["to"]</label>
+            <input id="To" name="To" type="date" value="@f.To?.ToString("yyyy-MM-dd")" class="form-control" />
         </div>
         <div class="col-12 d-flex gap-2">
             <button class="btn btn-dark" type="submit">@T["filter"]</button>
@@ -70,7 +68,7 @@
             @foreach (var o in Model.Result.Items)
             {
                 <tr>
-                    <td><a asp-action="Details" asp-route-id="@o.Id" class="fw-semibold ltr">@o.OrderNumber</a></td>
+                    <td class="text-nowrap"><a asp-action="Details" asp-route-id="@o.Id" class="fw-semibold ltr">@o.OrderNumber</a></td>
                     <td class="ltr small text-nowrap">@Fmt.DateTime(o.CreatedAt)</td>
                     <td>@o.CustomerName<div class="small text-muted ltr">@o.CustomerPhone</div></td>
                     <td>@o.Governorate</td>
