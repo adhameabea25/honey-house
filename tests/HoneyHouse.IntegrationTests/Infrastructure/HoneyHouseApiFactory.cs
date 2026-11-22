@@ -19,6 +19,7 @@ public class HoneyHouseApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
     public const string AdminPassword = "Admin12345";
 
     public CapturingEmailSender Emails { get; } = new();
+    public FakePaymobHandler Paymob { get; } = new();
     public string UploadsPath { get; } = Path.Combine(Path.GetTempPath(), $"hh-uploads-{Guid.NewGuid():N}");
 
     private readonly string _databaseName = $"HoneyHouse_Test_{Guid.NewGuid():N}";
@@ -47,7 +48,14 @@ public class HoneyHouseApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
                 ["Seed:AdminPassword"] = AdminPassword,
                 ["Jwt:SigningKey"] = "integration-tests-signing-key-0123456789abcdef",
                 ["RateLimiting:AuthPermitPerMinute"] = "10000",
-                ["FileStorage:RootPath"] = UploadsPath
+                ["FileStorage:RootPath"] = UploadsPath,
+                ["Jobs:Enabled"] = "false",
+                ["Paymob:Enabled"] = "true",
+                ["Paymob:SecretKey"] = "sk_test",
+                ["Paymob:PublicKey"] = "pk_test",
+                ["Paymob:HmacSecret"] = PaymobCallback.HmacSecret,
+                ["Paymob:IntegrationIds:0"] = "4567",
+                ["Paymob:NotificationUrl"] = "https://api.test/api/v1/payments/paymob/webhook"
             });
         });
         builder.ConfigureServices(services =>
@@ -55,6 +63,8 @@ public class HoneyHouseApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
             services.RemoveAll<IEmailSender>();
             services.AddSingleton(Emails);
             services.AddSingleton<IEmailSender>(Emails);
+            services.AddHttpClient<IPaymentGateway, HoneyHouse.Infrastructure.Payments.PaymobGateway>()
+                .ConfigurePrimaryHttpMessageHandler(() => Paymob);
         });
     }
 

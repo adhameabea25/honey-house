@@ -2,6 +2,7 @@ using HoneyHouse.Application.Interfaces.Repositories;
 using HoneyHouse.Application.Interfaces.Services;
 using HoneyHouse.Infrastructure.Email;
 using HoneyHouse.Infrastructure.Identity;
+using HoneyHouse.Infrastructure.Payments;
 using HoneyHouse.Infrastructure.Storage;
 using HoneyHouse.Domain.Entities;
 using HoneyHouse.Infrastructure.Persistence;
@@ -59,6 +60,9 @@ public static class DependencyInjection
 
         services.Configure<FileStorageOptions>(configuration.GetSection(FileStorageOptions.Section));
         services.AddSingleton<IFileStorage, LocalFileStorage>();
+
+        services.Configure<PaymobOptions>(configuration.GetSection(PaymobOptions.Section));
+        services.AddHttpClient<IPaymentGateway, PaymobGateway>(c => c.Timeout = TimeSpan.FromSeconds(20));
 
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Section));
         services.AddSingleton<ITokenService, JwtTokenService>();

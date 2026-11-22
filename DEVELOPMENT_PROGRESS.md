@@ -20,7 +20,7 @@
 | 2.6 | Addresses, governorates, cart | ✅ Done | ✅ | ✅ 2 unit + 9 integration |
 | 2.7 | Coupons | ✅ Done | ✅ | ✅ 8 unit + 10 integration |
 | 2.8 | Orders, checkout, inventory | ✅ Done | ✅ | ✅ 12 integration |
-| 2.9 | Payments: COD + Paymob | ⏳ | | |
+| 2.9 | Payments: COD + Paymob | ✅ Done | ✅ | ✅ 8 unit + 7 integration |
 | 2.10 | Reviews and favorites | ⏳ | | |
 | 2.11 | Admin APIs and analytics | ⏳ | | |
 
@@ -86,3 +86,11 @@
 - Inventory: `GET /admin/inventory` (search, low-stock filter), `POST /admin/inventory/{variantId}/adjust` (Restock/Adjustment, never below zero), `GET /admin/inventory/{variantId}/transactions` (full audit trail).
 - Order numbers look like `HH-261122-7KQ2MX`.
 - Build: 0 errors, 0 warnings. Tests: 57 unit + 69 integration passed (incl. a race where two customers buy the last jar: exactly one succeeds, stock ends at 0).
+
+### 2026-11-22 — Task 2.9
+- `IPaymentGateway` abstraction with `PaymobGateway` (Intention API + Unified Checkout). Placing an `Online` order creates a Paymob intention (amount in piasters, EGP, billing data, `special_reference` = order number) and returns `paymentUrl`. If Paymob fails, the whole order is rolled back (stock and cart untouched).
+- `POST /payments/paymob/webhook?hmac=...`: verifies the HMAC-SHA512 signature (Paymob field order, constant-time compare), is idempotent, never downgrades a paid order, rejects under-payments, auto-confirms paid orders, and flags payments that arrive after cancellation for refund.
+- `POST /payments/{orderId}/retry`: new payment attempt for an unpaid online order.
+- Background job `UnpaidOrderExpiryService` (every 60 s): cancels online orders unpaid after 30 minutes and returns their stock.
+- Paymob is configured under `Paymob` in settings (disabled until keys are provided; then online checkout is offered).
+- Build: 0 errors, 0 warnings. Tests: 65 unit + 76 integration passed (HMAC verified against an independently computed vector).

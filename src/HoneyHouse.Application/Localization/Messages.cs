@@ -82,6 +82,10 @@ public static class Messages
         ["payment_Paid"] = ("مدفوع", "Paid"),
         ["payment_Failed"] = ("فشل الدفع", "Payment failed"),
         ["payment_Refunded"] = ("تم الاسترداد", "Refunded"),
+        // Payments
+        ["online_payment_unavailable"] = ("الدفع الإلكتروني غير متاح حاليًا، اختر الدفع عند الاستلام", "Online payment is currently unavailable. Please choose cash on delivery."),
+        ["payment_gateway_error"] = ("تعذر بدء عملية الدفع، حاول مرة أخرى", "Could not start the payment. Please try again."),
+        ["payment_not_retryable"] = ("لا يمكن إعادة محاولة الدفع لهذا الطلب", "Payment cannot be retried for this order."),
         ["identity_error"] = ("تعذر تنفيذ العملية: {0}", "The operation failed: {0}"),
     };
 

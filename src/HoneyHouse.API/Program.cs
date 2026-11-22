@@ -17,6 +17,9 @@ builder.Services
     .AddApiServices(builder.Configuration)
     .AddJwtAuthentication();
 
+if (builder.Configuration.GetValue("Jobs:Enabled", true))
+    builder.Services.AddHostedService<HoneyHouse.API.BackgroundJobs.UnpaidOrderExpiryService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
