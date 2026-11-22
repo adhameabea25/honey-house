@@ -129,7 +129,7 @@
 | 3.3 | Categories, products, variants, images | ✅ Done |
 | 3.4 | Inventory | ✅ Done |
 | 3.5 | Orders and status changes | ✅ Done |
-| 3.6 | Coupons, reviews, shipping fees | ⏳ |
+| 3.6 | Coupons, reviews, shipping fees | ✅ Done |
 | 3.7 | Users and staff | ⏳ |
 
 The dashboard (`src/HoneyHouse.Admin`) is a separate ASP.NET Core MVC app that reuses the Application and
@@ -176,5 +176,12 @@ Infrastructure layers directly (same services, rules and database as the API; no
 - "Mark as paid" for orders whose payment is still pending.
 - Printable invoice / packing slip (shows "amount to collect" for unpaid cash-on-delivery orders).
 - Build: 0 errors, 0 warnings. Tests: 48 admin tests passed.
+
+### 2026-11-22 — Task 3.6
+- Coupons (Admin): list with search, active filter and a state badge (active / scheduled / expired / inactive) plus usage count; add and edit (code, Arabic/English description, percentage or fixed amount, minimum order, maximum discount, total and per-customer limits, start and end in Cairo time); delete only while unused, otherwise a message suggests deactivating.
+- Reviews (Admin and Manager): tabs for pending / published / all, stars, product link, customer, verified-purchase badge; publish, hide and delete. Product rating and count update immediately.
+- Shipping fees (Admin): all 27 governorates with fee and delivery on/off, saved per row; new orders use the new fee at once.
+- Coupons and shipping are Admin-only (same as the API); Managers do not see them in the menu and get the access-denied page if they open the URL.
+- Build: 0 errors, 0 warnings. Tests: 57 admin tests passed.
 
 ## Next: Phase 3 tasks 3.2 – 3.7

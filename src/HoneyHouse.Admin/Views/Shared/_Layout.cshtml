@@ -57,12 +57,15 @@
                         <a class="nav-link @Active("Inventory")" asp-controller="Inventory" asp-action="Index">📦 @T["nav_inventory"]</a>
                         <div class="nav-section">@T["nav_sales"]</div>
                         <a class="nav-link @Active("Orders")" asp-controller="Orders" asp-action="Index">🧾 @T["nav_orders"]</a>
-                        <a class="nav-link @Active("Coupons")" asp-controller="Coupons" asp-action="Index">🏷️ @T["nav_coupons"]</a>
-                        <a class="nav-link @Active("Reviews")" asp-controller="Reviews" asp-action="Index">⭐ @T["nav_reviews"]</a>
-                        <div class="nav-section">@T["nav_settings"]</div>
-                        <a class="nav-link @Active("Governorates")" asp-controller="Governorates" asp-action="Index">🚚 @T["nav_shipping"]</a>
                         @if (isAdmin)
                         {
+                            <a class="nav-link @Active("Coupons")" asp-controller="Coupons" asp-action="Index">🏷️ @T["nav_coupons"]</a>
+                        }
+                        <a class="nav-link @Active("Reviews")" asp-controller="Reviews" asp-action="Index">⭐ @T["nav_reviews"]</a>
+                        @if (isAdmin)
+                        {
+                            <div class="nav-section">@T["nav_settings"]</div>
+                            <a class="nav-link @Active("Governorates")" asp-controller="Governorates" asp-action="Index">🚚 @T["nav_shipping"]</a>
                             <a class="nav-link @Active("Users")" asp-controller="Users" asp-action="Index">👥 @T["nav_users"]</a>
                         }
                     </nav>

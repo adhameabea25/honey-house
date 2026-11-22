@@ -232,6 +232,47 @@ public sealed partial class AdminText
         ["csv_items"] = ("عدد القطع", "Items"),
         ["csv_total"] = ("الإجمالي (ج.م)", "Total (EGP)"),
 
+        // Coupons
+        ["coupon_add"] = ("إضافة كوبون", "Add coupon"),
+        ["coupon_edit"] = ("تعديل الكوبون", "Edit coupon"),
+        ["coupon_code"] = ("كود الخصم", "Code"),
+        ["conditions"] = ("الشروط", "Conditions"),
+        ["validity"] = ("الصلاحية", "Valid"),
+        ["usage"] = ("الاستخدام", "Used"),
+        ["min_order"] = ("الحد الأدنى للطلب", "Minimum order"),
+        ["max_discount"] = ("أقصى خصم", "Maximum discount"),
+        ["max_discount_hint"] = ("للخصم بالنسبة المئوية", "For percentage discounts"),
+        ["discount_type"] = ("نوع الخصم", "Discount type"),
+        ["discount_value"] = ("قيمة الخصم", "Value"),
+        ["discount_Percentage"] = ("نسبة مئوية %", "Percentage %"),
+        ["discount_FixedAmount"] = ("مبلغ ثابت (ج.م)", "Fixed amount (EGP)"),
+        ["usage_limit"] = ("عدد مرات الاستخدام", "Total uses"),
+        ["usage_limit_per_user"] = ("لكل عميل", "Uses per customer"),
+        ["empty_unlimited"] = ("اتركه فارغًا لعدد غير محدود", "Leave empty for unlimited"),
+        ["starts_at"] = ("يبدأ في", "Starts"),
+        ["expires_at"] = ("ينتهي في", "Expires"),
+        ["cairo_time_hint"] = ("المواعيد بتوقيت القاهرة.", "Times are Cairo time."),
+        ["coupon_expired_badge"] = ("منتهي", "Expired"),
+        ["coupon_scheduled"] = ("مجدول", "Scheduled"),
+        ["coupon_used_times"] = ("تم استخدام هذا الكوبون {0} مرة.", "This coupon has been used {0} times."),
+
+        // Reviews
+        ["reviews_pending"] = ("بانتظار المراجعة", "Pending"),
+        ["reviews_approved"] = ("المنشورة", "Published"),
+        ["reviews_all"] = ("الكل", "All"),
+        ["review_status_pending"] = ("بانتظار المراجعة", "Pending"),
+        ["review_status_approved"] = ("منشور", "Published"),
+        ["review_approve"] = ("نشر", "Publish"),
+        ["review_hide"] = ("إخفاء", "Hide"),
+        ["review_approved"] = ("تم نشر التقييم", "Review published"),
+        ["review_hidden"] = ("تم إخفاء التقييم", "Review hidden"),
+        ["verified_purchase"] = ("مشتري مؤكد", "Verified purchase"),
+
+        // Shipping
+        ["shipping_hint"] = ("رسوم التوصيل لكل محافظة تُضاف للطلب عند الشراء. أوقف المحافظة لإخفائها من العناوين.", "The fee is added to each order at checkout. Turn a governorate off to stop deliveries there."),
+        ["delivery_available"] = ("التوصيل متاح", "Delivery available"),
+        ["governorate_saved"] = ("تم حفظ {0}", "{0} saved"),
+
         // Dashboard
         ["last_days"] = ("آخر {0} يوم", "Last {0} days"),
         ["range_label"] = ("الفترة من {0} إلى {1}", "From {0} to {1}"),
