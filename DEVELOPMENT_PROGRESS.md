@@ -19,7 +19,7 @@
 | 2.5 | Catalog: categories, products, variants, images | ✅ Done | ✅ | ✅ 13 unit + 11 integration |
 | 2.6 | Addresses, governorates, cart | ✅ Done | ✅ | ✅ 2 unit + 9 integration |
 | 2.7 | Coupons | ✅ Done | ✅ | ✅ 8 unit + 10 integration |
-| 2.8 | Orders, checkout, inventory | ⏳ | | |
+| 2.8 | Orders, checkout, inventory | ✅ Done | ✅ | ✅ 12 integration |
 | 2.9 | Payments: COD + Paymob | ⏳ | | |
 | 2.10 | Reviews and favorites | ⏳ | | |
 | 2.11 | Admin APIs and analytics | ⏳ | | |
@@ -78,3 +78,11 @@
 - Admin (`/admin/coupons`, Admin only): search/paging, get, create, update, delete (blocked once used; deactivate instead).
 - Enums are now serialized as strings in API JSON (e.g. `"discountType": "Percentage"`).
 - Build: 0 errors, 0 warnings. Tests: 57 unit + 57 integration passed.
+
+### 2026-11-22 — Task 2.8
+- Checkout: `POST /orders/checkout/preview` (subtotal, coupon discount or coupon error, governorate shipping fee, total, blocking reasons) and `POST /orders` which, in one database transaction: re-validates cart, address and coupon; snapshots product names, prices and the address into the order; reserves stock (optimistic concurrency on `ProductVariants.RowVersion` + `CHECK (StockQuantity >= 0)` prevent overselling); records `Sale` inventory transactions; records coupon usage; clears the cart; starts payment through `IOrderPaymentHandler` (Cash on Delivery now, online in 2.9).
+- Customer: `GET /orders`, `GET /orders/{id}`, `GET /orders/{id}/tracking` (localized status timeline), `POST /orders/{id}/cancel` (only before shipping; returns stock and frees the coupon).
+- Admin/Manager: `GET /admin/orders` (filters: status, payment status/method, date range, search by order number/phone/name/email), `GET /admin/orders/{id}` (customer, payments, allowed next statuses), `PUT /admin/orders/{id}/status` (state machine; Cancelled/Returned restock; Delivered marks COD as paid), `POST /admin/orders/{id}/mark-paid`.
+- Inventory: `GET /admin/inventory` (search, low-stock filter), `POST /admin/inventory/{variantId}/adjust` (Restock/Adjustment, never below zero), `GET /admin/inventory/{variantId}/transactions` (full audit trail).
+- Order numbers look like `HH-261122-7KQ2MX`.
+- Build: 0 errors, 0 warnings. Tests: 57 unit + 69 integration passed (incl. a race where two customers buy the last jar: exactly one succeeds, stock ends at 0).
